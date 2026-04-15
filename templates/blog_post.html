@@ -1,0 +1,173 @@
+{% extends "base.html" %}
+{% block title %}Blog Post — SaforaTech{% endblock %}
+{% block content %}
+<div style="padding-top: var(--nav-h)"></div>
+
+<section>
+  <div class="container" style="max-width:800px">
+    <!-- Loader -->
+    <div id="post-loader" style="text-align:center;padding:80px 20px">
+      <div class="loader-ring" style="margin:0 auto 16px"></div>
+      <p style="color:var(--text-muted)">Loading post...</p>
+    </div>
+
+    <!-- Post Content -->
+    <article id="post-article" class="hidden">
+      <!-- Breadcrumb -->
+      <nav style="font-size:0.8rem;color:var(--text-muted);margin-bottom:24px">
+        <a href="/" style="color:var(--text-muted);text-decoration:none">Home</a>
+        <span style="margin:0 8px">›</span>
+        <a href="/blog" style="color:var(--text-muted);text-decoration:none">Blog</a>
+        <span style="margin:0 8px">›</span>
+        <span id="post-cat-crumb"></span>
+      </nav>
+
+      <div id="post-cat-badge" style="margin-bottom:16px"></div>
+      <h1 id="post-title" style="font-family:var(--font-display);font-size:clamp(1.8rem,4vw,2.6rem);font-weight:800;color:var(--text);line-height:1.2;margin-bottom:16px;letter-spacing:-0.5px"></h1>
+
+      <div style="display:flex;align-items:center;gap:16px;margin-bottom:32px;padding-bottom:24px;border-bottom:1px solid var(--border)">
+        <div id="post-author-avatar" style="width:40px;height:40px;background:linear-gradient(135deg,var(--primary),var(--accent));border-radius:50%;display:flex;align-items:center;justify-content:center;color:#fff;font-weight:700;flex-shrink:0">A</div>
+        <div>
+          <div id="post-author" style="font-weight:600;font-size:0.9rem;color:var(--text)"></div>
+          <div id="post-date" style="font-size:0.78rem;color:var(--text-muted)"></div>
+        </div>
+        <div style="margin-left:auto;font-size:0.78rem;color:var(--text-muted)" id="post-views"></div>
+      </div>
+
+      <div id="post-body" style="font-size:1rem;line-height:1.9;color:var(--text-muted);max-width:100%">
+        <!-- Rendered markdown goes here -->
+      </div>
+
+      <div style="margin-top:40px;padding-top:32px;border-top:1px solid var(--border)">
+        <div style="display:flex;align-items:center;gap:12px;flex-wrap:wrap">
+          <span style="font-size:0.8rem;font-weight:600;color:var(--text)">Tags:</span>
+          <div id="post-tags" style="display:flex;gap:6px;flex-wrap:wrap"></div>
+        </div>
+      </div>
+
+      <!-- Share -->
+      <div style="margin-top:24px;display:flex;align-items:center;gap:10px">
+        <span style="font-size:0.8rem;font-weight:600;color:var(--text)">Share:</span>
+        <a onclick="sharePost('twitter')"  href="#" style="width:36px;height:36px;background:var(--bg-section);border-radius:8px;display:flex;align-items:center;justify-content:center;text-decoration:none;font-size:0.9rem;transition:all 0.2s">🐦</a>
+        <a onclick="sharePost('whatsapp')" href="#" style="width:36px;height:36px;background:var(--bg-section);border-radius:8px;display:flex;align-items:center;justify-content:center;text-decoration:none;font-size:0.9rem;transition:all 0.2s">💬</a>
+        <a onclick="sharePost('copy')"     href="#" style="width:36px;height:36px;background:var(--bg-section);border-radius:8px;display:flex;align-items:center;justify-content:center;text-decoration:none;font-size:0.9rem;transition:all 0.2s">🔗</a>
+      </div>
+    </article>
+
+    <!-- Not Found -->
+    <div id="post-notfound" class="hidden" style="text-align:center;padding:80px 20px">
+      <div style="font-size:3rem;margin-bottom:16px">📄</div>
+      <h2 style="font-family:var(--font-display);font-size:1.5rem;font-weight:800;margin-bottom:8px">Post Not Found</h2>
+      <p style="color:var(--text-muted);margin-bottom:24px">This post may have been moved or deleted.</p>
+      <a href="/blog" class="btn btn-primary">← Back to Blog</a>
+    </div>
+  </div>
+</section>
+{% endblock %}
+
+{% block scripts %}
+<script>
+const POST_SLUG = '{{ slug }}';
+
+// Simple markdown-to-HTML renderer
+function renderMarkdown(md) {
+  return md
+    .replace(/^### (.+)$/gm, '<h3 style="font-family:var(--font-display);font-weight:700;font-size:1.2rem;color:var(--text);margin:28px 0 12px">$1</h3>')
+    .replace(/^## (.+)$/gm,  '<h2 style="font-family:var(--font-display);font-weight:800;font-size:1.5rem;color:var(--text);margin:36px 0 14px">$1</h2>')
+    .replace(/^# (.+)$/gm,   '<h1 style="font-family:var(--font-display);font-weight:800;font-size:1.8rem;color:var(--text);margin:36px 0 16px">$1</h1>')
+    .replace(/\*\*(.+?)\*\*/g, '<strong style="color:var(--text);font-weight:700">$1</strong>')
+    .replace(/\*(.+?)\*/g, '<em>$1</em>')
+    .replace(/`([^`]+)`/g, '<code style="background:var(--bg-section);padding:2px 7px;border-radius:4px;font-size:0.9em;font-family:monospace;color:var(--primary)">$1</code>')
+    .replace(/```(\w*)\n([\s\S]*?)```/g, '<pre style="background:var(--bg-section);border:1px solid var(--border);border-radius:var(--radius-sm);padding:20px;overflow-x:auto;margin:20px 0"><code style="font-family:monospace;font-size:0.875rem;color:var(--text)">$2</code></pre>')
+    .replace(/^- (.+)$/gm, '<li style="margin:4px 0;color:var(--text-muted)">$1</li>')
+    .replace(/(<li.*<\/li>\n?)+/g, '<ul style="padding-left:20px;margin:12px 0">$&</ul>')
+    .replace(/\n\n/g, '</p><p style="margin:0 0 16px;line-height:1.9;color:var(--text-muted)">')
+    .replace(/^(?!<)(.+)$/gm, '')
+    ;
+}
+
+async function loadPost() {
+  try {
+    const sb = getSupabase();
+    const { data, error } = await fetchPostBySlug(POST_SLUG);
+
+    document.getElementById('post-loader').classList.add('hidden');
+
+    if (error || !data) {
+      // Try sample fallback
+      showSamplePost();
+      return;
+    }
+
+    showPost(data);
+  } catch(e) {
+    document.getElementById('post-loader').classList.add('hidden');
+    showSamplePost();
+  }
+}
+
+function showPost(p) {
+  const article = document.getElementById('post-article');
+  article.classList.remove('hidden');
+
+  const catColor = p.blog_categories?.color || '#0057FF';
+  const catName  = p.blog_categories?.name  || 'General';
+
+  document.getElementById('post-cat-crumb').textContent = catName;
+  document.getElementById('post-cat-badge').innerHTML = `<span style="padding:3px 12px;background:${catColor}1A;color:${catColor};border-radius:100px;font-size:0.75rem;font-weight:700">${catName}</span>`;
+  document.getElementById('post-title').textContent = p.title;
+
+  const author = p.profiles?.full_name || 'SaforaTech';
+  document.getElementById('post-author').textContent = author;
+  document.getElementById('post-author-avatar').textContent = author[0];
+  document.getElementById('post-date').textContent = p.published_at ? new Date(p.published_at).toLocaleDateString('en-BD', { year:'numeric', month:'long', day:'numeric' }) : '';
+  document.getElementById('post-views').textContent = `👁 ${(p.views||0).toLocaleString()} views`;
+
+  const body = document.getElementById('post-body');
+  body.innerHTML = `<p style="margin:0 0 16px;line-height:1.9;color:var(--text-muted)">` + renderMarkdown(p.content || '') + `</p>`;
+
+  if (p.tags && p.tags.length) {
+    document.getElementById('post-tags').innerHTML = p.tags.map(t =>
+      `<span style="padding:3px 10px;background:var(--bg-section);color:var(--text-muted);border-radius:100px;font-size:0.75rem">${t}</span>`
+    ).join('');
+  }
+
+  document.title = p.title + ' — SaforaTech Blog';
+}
+
+function showSamplePost() {
+  const article = document.getElementById('post-article');
+  article.classList.remove('hidden');
+  document.getElementById('post-cat-crumb').textContent = 'Networking';
+  document.getElementById('post-cat-badge').innerHTML = `<span style="padding:3px 12px;background:rgba(0,87,255,0.1);color:var(--primary);border-radius:100px;font-size:0.75px;font-weight:700">Networking</span>`;
+  document.getElementById('post-title').textContent = 'Sample Post — Configure Supabase to see real posts';
+  document.getElementById('post-author').textContent = 'SaforaTech Team';
+  document.getElementById('post-date').textContent = 'April 4, 2025';
+  document.getElementById('post-views').textContent = '👁 0 views';
+  document.getElementById('post-body').innerHTML = `
+    <p style="margin:0 0 16px;line-height:1.9;color:var(--text-muted)">
+      This is a sample post. To load real blog posts, configure your Supabase credentials in 
+      <code style="background:var(--bg-section);padding:2px 7px;border-radius:4px;font-family:monospace;color:var(--primary)">static/js/supabase-client.js</code>
+      and run the SQL schema from <code style="background:var(--bg-section);padding:2px 7px;border-radius:4px;font-family:monospace;color:var(--primary)">database/schema.sql</code>.
+    </p>
+    <h2 style="font-family:var(--font-display);font-weight:800;font-size:1.4rem;color:var(--text);margin:28px 0 12px">Setup Steps</h2>
+    <ul style="padding-left:20px;margin:12px 0">
+      <li style="margin:6px 0;color:var(--text-muted)">1. Create a project at <strong>supabase.com</strong></li>
+      <li style="margin:6px 0;color:var(--text-muted)">2. Run the SQL schema in Supabase → SQL Editor</li>
+      <li style="margin:6px 0;color:var(--text-muted)">3. Add your Project URL and Anon Key to <code>supabase-client.js</code></li>
+      <li style="margin:6px 0;color:var(--text-muted)">4. Enable Google OAuth in Supabase → Authentication → Providers</li>
+    </ul>
+  `;
+}
+
+function sharePost(platform) {
+  const url   = window.location.href;
+  const title = document.getElementById('post-title').textContent;
+  if (platform === 'twitter')  window.open(`https://twitter.com/intent/tweet?text=${encodeURIComponent(title)}&url=${encodeURIComponent(url)}`);
+  if (platform === 'whatsapp') window.open(`https://wa.me/?text=${encodeURIComponent(title + ' ' + url)}`);
+  if (platform === 'copy') { navigator.clipboard.writeText(url); showToast('🔗 Link copied!', 'success'); }
+}
+
+document.addEventListener('DOMContentLoaded', loadPost);
+</script>
+{% endblock %}

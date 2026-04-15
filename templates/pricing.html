@@ -1,0 +1,205 @@
+{% extends "base.html" %}
+{% block title %}Pricing — SaforaTech{% endblock %}
+{% block content %}
+
+<div style="padding-top: var(--nav-h)"></div>
+
+<div style="background:var(--bg-section);padding:64px 0 48px;text-align:center">
+  <div class="container">
+    <div class="section-tag">Pricing Plans</div>
+    <h1 class="section-title" style="margin-top:12px"><span class="gradient-text">Simple, Transparent</span> Pricing</h1>
+    <p class="section-desc">Choose the plan that fits your business. No hidden fees. Cancel anytime.</p>
+    <!-- Toggle: Monthly / Yearly -->
+    <div style="display:flex;align-items:center;justify-content:center;gap:12px;margin-top:24px">
+      <span style="font-size:0.9rem;color:var(--text-muted)">Monthly</span>
+      <label style="position:relative;display:inline-block;width:48px;height:26px">
+        <input type="checkbox" id="billing-toggle" style="opacity:0;width:0;height:0" onchange="toggleBilling()">
+        <span style="position:absolute;inset:0;background:var(--border);border-radius:26px;cursor:pointer;transition:0.3s">
+          <span id="billing-dot" style="position:absolute;top:3px;left:3px;width:20px;height:20px;background:#fff;border-radius:50%;transition:0.3s;box-shadow:0 1px 4px rgba(0,0,0,0.2)"></span>
+        </span>
+      </label>
+      <span style="font-size:0.9rem;color:var(--text-muted)">Yearly <span style="background:rgba(16,185,129,0.12);color:#10B981;padding:2px 8px;border-radius:100px;font-size:0.75rem;font-weight:700">Save 20%</span></span>
+    </div>
+  </div>
+</div>
+
+<section>
+  <div class="container">
+
+    <!-- Main Plans -->
+    <div class="grid grid-4" style="align-items:start;margin-bottom:64px">
+
+      <!-- BasicCare -->
+      <div class="pricing-card fade-up">
+        <div style="margin-bottom:24px">
+          <div style="font-size:2rem;margin-bottom:10px">🔹</div>
+          <h3 style="font-family:var(--font-display);font-weight:800;font-size:1.2rem;color:var(--text)">BasicCare</h3>
+          <p style="font-size:0.8rem;color:var(--text-muted);margin-top:4px">Small businesses</p>
+        </div>
+        <div>
+          <div class="pricing-price" id="basic-price">৳3,500</div>
+          <div class="pricing-period" id="basic-period">– ৳5,000 / month</div>
+        </div>
+        <ul class="pricing-features">
+          <li>OS & Software Installation</li>
+          <li>Network Setup (1 Router + 5 PCs)</li>
+          <li>CCTV up to 4 Cameras</li>
+          <li>Remote Support (9AM–5PM)</li>
+          <li>Monthly Health Checkup</li>
+        </ul>
+        <a href="/contact" class="btn btn-outline" style="width:100%;justify-content:center">Get Started</a>
+      </div>
+
+      <!-- SmartBiz — Popular -->
+      <div class="pricing-card popular fade-up delay-1">
+        <div class="pricing-badge">⭐ Most Popular</div>
+        <div style="margin-bottom:24px">
+          <div style="font-size:2rem;margin-bottom:10px">🔷</div>
+          <h3 style="font-family:var(--font-display);font-weight:800;font-size:1.2rem;color:var(--text)">SmartBiz</h3>
+          <p style="font-size:0.8rem;color:var(--text-muted);margin-top:4px">Growing businesses</p>
+        </div>
+        <div>
+          <div class="pricing-price" id="smart-price">৳8,000</div>
+          <div class="pricing-period" id="smart-period">– ৳12,000 / month</div>
+        </div>
+        <ul class="pricing-features">
+          <li>Everything in BasicCare</li>
+          <li>Website Maintenance (1 site)</li>
+          <li>Wi-Fi Optimization</li>
+          <li>10 PCs Network Maintenance</li>
+          <li>CCTV up to 8 Cameras</li>
+          <li>Support: 9AM–8PM</li>
+          <li>Quarterly Security Audit</li>
+        </ul>
+        <a href="/contact" class="btn btn-primary" style="width:100%;justify-content:center">Get Started</a>
+      </div>
+
+      <!-- Enterprise+ -->
+      <div class="pricing-card fade-up delay-2">
+        <div style="margin-bottom:24px">
+          <div style="font-size:2rem;margin-bottom:10px">💎</div>
+          <h3 style="font-family:var(--font-display);font-weight:800;font-size:1.2rem;color:var(--text)">Enterprise+</h3>
+          <p style="font-size:0.8rem;color:var(--text-muted);margin-top:4px">Large organizations</p>
+        </div>
+        <div>
+          <div class="pricing-price" id="ent-price">৳18,000</div>
+          <div class="pricing-period" id="ent-period">– ৳25,000 / month</div>
+        </div>
+        <ul class="pricing-features">
+          <li>Full Network & Server Support</li>
+          <li>Cloud & Local Backup</li>
+          <li>Cybersecurity Monitoring</li>
+          <li>Up to 25 PCs + Server</li>
+          <li>24/7 Priority Support</li>
+          <li>Dedicated Account Manager</li>
+          <li>Monthly Reports & Analytics</li>
+        </ul>
+        <a href="/contact" class="btn btn-outline" style="width:100%;justify-content:center">Get Started</a>
+      </div>
+
+      <!-- Custom -->
+      <div class="pricing-card fade-up delay-3" style="background:linear-gradient(135deg,var(--primary),#0040CC);border-color:transparent">
+        <div style="margin-bottom:24px">
+          <div style="font-size:2rem;margin-bottom:10px">✨</div>
+          <h3 style="font-family:var(--font-display);font-weight:800;font-size:1.2rem;color:#fff">Custom Plan</h3>
+          <p style="font-size:0.8rem;color:rgba(255,255,255,0.75);margin-top:4px">Any size, any need</p>
+        </div>
+        <div style="font-family:var(--font-display);font-size:2.2rem;font-weight:800;color:#fff;margin-bottom:4px">Custom</div>
+        <div style="font-size:0.85rem;color:rgba(255,255,255,0.7);margin-bottom:24px">flexible pricing</div>
+        <ul style="list-style:none;margin-bottom:24px;display:flex;flex-direction:column;gap:11px">
+          {% for f in ["Tailor-made solutions","Any service combination","Flexible support hours","Pay for what you need","SLA guarantee"] %}
+          <li style="display:flex;gap:10px;font-size:0.875rem;color:rgba(255,255,255,0.9)"><span>✓</span>{{ f }}</li>
+          {% endfor %}
+        </ul>
+        <a href="/contact" style="display:flex;align-items:center;justify-content:center;padding:12px;background:rgba(255,255,255,0.2);border:2px solid rgba(255,255,255,0.4);border-radius:8px;color:#fff;font-weight:700;text-decoration:none;font-size:0.9rem;transition:all 0.25s" onmouseover="this.style.background='rgba(255,255,255,0.3)'" onmouseout="this.style.background='rgba(255,255,255,0.2)'">
+          Contact Us
+        </a>
+      </div>
+    </div>
+
+    <!-- SaforaERP Pricing -->
+    <div style="margin-bottom:64px" class="fade-up">
+      <div class="section-header">
+        <div class="section-tag">SaforaERP Plans</div>
+        <h2 class="section-title">SaforaERP <span class="gradient-text">Subscription</span></h2>
+        <p class="section-desc">Cloud-hosted ERP for Bangladeshi businesses</p>
+      </div>
+      <div class="grid grid-3">
+        {% for plan in [
+          {"name":"Starter","price":"৳1,500","period":"/month","users":"Up to 3 users","features":["Inventory Management","Basic Sales & Billing","Product Catalog","Customer Records","Email Support"],"cta":"Try Free 14 Days"},
+          {"name":"Business","price":"৳3,500","period":"/month","users":"Up to 10 users","popular":True,"features":["Everything in Starter","HR & Payroll Module","POS System","Financial Reports","Multi-branch Support","Priority Support"],"cta":"Get Started"},
+          {"name":"Enterprise","price":"৳8,000","period":"/month","users":"Unlimited users","features":["Full ERP Suite","Custom Modules","API Access","Dedicated Server","Data Migration","24/7 Support","Custom Branding"],"cta":"Contact Sales"}
+        ] %}
+        <div class="pricing-card {% if plan.get('popular') %}popular{% endif %}" style="position:relative">
+          {% if plan.get('popular') %}<div class="pricing-badge">Most Popular</div>{% endif %}
+          <div style="margin-bottom:16px">
+            <div style="font-size:0.7rem;text-transform:uppercase;letter-spacing:1.5px;color:var(--primary);font-weight:700;margin-bottom:6px">SaforaERP</div>
+            <h3 style="font-family:var(--font-display);font-weight:800;font-size:1.2rem;color:var(--text)">{{ plan.name }}</h3>
+            <p style="font-size:0.78rem;color:var(--text-muted);margin-top:3px">{{ plan.users }}</p>
+          </div>
+          <div class="pricing-price">{{ plan.price }}</div>
+          <div class="pricing-period">{{ plan.period }}</div>
+          <ul class="pricing-features">
+            {% for f in plan.features %}<li>{{ f }}</li>{% endfor %}
+          </ul>
+          <a href="https://erp.saforatech.com" target="_blank" class="btn {% if plan.get('popular') %}btn-primary{% else %}btn-outline{% endif %}" style="width:100%;justify-content:center">{{ plan.cta }}</a>
+        </div>
+        {% endfor %}
+      </div>
+    </div>
+
+    <!-- FAQ -->
+    <div class="fade-up">
+      <div class="section-header">
+        <div class="section-tag">Pricing FAQ</div>
+        <h2 class="section-title">Common <span class="gradient-text">Questions</span></h2>
+      </div>
+      <div style="max-width:720px;margin:0 auto">
+        {% for faq in [
+          ("Are there any setup fees?","No hidden setup fees. The monthly price is all-inclusive for the listed services."),
+          ("Can I cancel anytime?","Yes. You can cancel your monthly plan anytime with 7 days notice. Annual plans have a prorated refund policy."),
+          ("Do you offer a free trial for SaforaERP?","Yes! SaforaERP comes with a 14-day free trial. No credit card required."),
+          ("What payment methods do you accept?","We accept bKash, Nagad, bank transfer, and cash for local clients."),
+          ("Can I upgrade or downgrade my plan?","Absolutely. You can change your plan at any time. Upgrades take effect immediately.")
+        ] %}
+        <div class="faq-item">
+          <div class="faq-question"><span>{{ faq[0] }}</span><span class="faq-icon">+</span></div>
+          <div class="faq-answer">{{ faq[1] }}</div>
+        </div>
+        {% endfor %}
+      </div>
+    </div>
+
+  </div>
+</section>
+
+{% endblock %}
+
+{% block scripts %}
+<script>
+let isYearly = false;
+
+const prices = {
+  basic:  { monthly: '৳3,500 – ৳5,000',  yearly: '৳2,800 – ৳4,000'  },
+  smart:  { monthly: '৳8,000 – ৳12,000', yearly: '৳6,400 – ৳9,600'  },
+  ent:    { monthly: '৳18,000 – ৳25,000', yearly: '৳14,400 – ৳20,000' }
+};
+
+function toggleBilling() {
+  isYearly = document.getElementById('billing-toggle').checked;
+  const dot = document.getElementById('billing-dot');
+  const toggle = dot.parentElement;
+  toggle.style.background = isYearly ? 'var(--primary)' : 'var(--border)';
+  dot.style.left = isYearly ? '25px' : '3px';
+
+  const period = isYearly ? '/ month (billed yearly)' : '/ month';
+  ['basic','smart','ent'].forEach(key => {
+    const priceEl = document.getElementById(`${key}-price`);
+    const periodEl = document.getElementById(`${key}-period`);
+    const vals = prices[key][isYearly ? 'yearly' : 'monthly'].split(' – ');
+    if (priceEl) priceEl.textContent = vals[0];
+    if (periodEl) periodEl.textContent = vals.length > 1 ? `– ${vals[1]} ${period}` : period;
+  });
+}
+</script>
+{% endblock %}

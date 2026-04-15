@@ -1,0 +1,226 @@
+{% extends "admin/base_admin.html" %}
+{% block title %}Services — SaforaTech CPanel{% endblock %}
+{% block breadcrumb %}<a href="/admin/" style="color:var(--text-muted);text-decoration:none">Dashboard</a> › <strong>Services</strong>{% endblock %}
+{% set active = 'services' %}
+
+{% block content %}
+<div class="cp-page-header">
+  <div>
+    <h1 class="cp-page-title">⚙️ Manage Services</h1>
+    <p class="cp-page-sub">Edit your service offerings shown on the website</p>
+  </div>
+  <button onclick="openAddService()" class="btn btn-primary btn-sm">+ Add Service</button>
+</div>
+
+<div id="add-form" style="display:none" class="cp-card" style="margin-bottom:20px">
+  <div class="cp-card-header">
+    <div class="cp-card-title" id="form-title">+ Add New Service</div>
+    <button onclick="closeForm()" class="cp-btn cp-btn-ghost">✕ Cancel</button>
+  </div>
+  <div class="cp-card-body">
+    <input type="hidden" id="edit-id"/>
+    <div class="cp-form-row">
+      <div>
+        <label class="cp-label">Icon (emoji)</label>
+        <input type="text" id="svc-icon" class="cp-input" placeholder="🌐" maxlength="4"/>
+      </div>
+      <div>
+        <label class="cp-label">Sort Order</label>
+        <input type="number" id="svc-order" class="cp-input" value="0" min="0"/>
+      </div>
+    </div>
+    <div class="cp-form-row">
+      <div>
+        <label class="cp-label">Title (English)</label>
+        <input type="text" id="svc-title" class="cp-input" placeholder="IT Infrastructure & Networking"/>
+      </div>
+      <div>
+        <label class="cp-label">শিরোনাম (বাংলা)</label>
+        <input type="text" id="svc-title-bn" class="cp-input" placeholder="আইটি অবকাঠামো ও নেটওয়ার্কিং" style="font-family:var(--font-bengali)"/>
+      </div>
+    </div>
+    <div class="cp-form-row full">
+      <div>
+        <label class="cp-label">Description (English)</label>
+        <textarea id="svc-desc" class="cp-textarea" rows="3" placeholder="Brief description..."></textarea>
+      </div>
+    </div>
+    <div class="cp-form-row full">
+      <div>
+        <label class="cp-label">বিবরণ (বাংলা)</label>
+        <textarea id="svc-desc-bn" class="cp-textarea" rows="3" placeholder="বাংলায় বিবরণ..." style="font-family:var(--font-bengali)"></textarea>
+      </div>
+    </div>
+    <div style="display:flex;align-items:center;gap:10px">
+      <label class="cp-toggle">
+        <input type="checkbox" id="svc-active" checked/>
+        <span class="cp-toggle-slider"></span>
+      </label>
+      <span style="font-size:0.875rem;color:var(--text)">Active (show on website)</span>
+    </div>
+    <div style="margin-top:16px;display:flex;gap:10px">
+      <button onclick="saveService()" class="btn btn-primary">💾 Save Service</button>
+      <button onclick="closeForm()" class="btn btn-ghost">Cancel</button>
+    </div>
+  </div>
+</div>
+
+<div id="save-alert" class="cp-alert" style="display:none"></div>
+
+<div class="cp-card">
+  <div class="cp-card-header">
+    <div class="cp-card-title">All Services <span id="svc-count" style="color:var(--text-muted);font-weight:400;font-size:0.85rem"></span></div>
+  </div>
+  <div style="overflow-x:auto">
+    <table class="cp-table">
+      <thead>
+        <tr>
+          <th style="width:50px">Icon</th>
+          <th>Service Title</th>
+          <th>Description</th>
+          <th>Status</th>
+          <th>Order</th>
+          <th>Actions</th>
+        </tr>
+      </thead>
+      <tbody id="svc-tbody">
+        <tr><td colspan="6" style="text-align:center;padding:32px;color:var(--text-muted)">
+          <div class="loader-ring" style="margin:0 auto 10px"></div>Loading services...
+        </td></tr>
+      </tbody>
+    </table>
+  </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+let services=[];
+
+async function loadServices(){
+  try{
+    const sb=getSupabase();
+    const {data,error}=await sb.from('services').select('*').order('sort_order');
+    if(error)throw error;
+    services=data||[];
+    render();
+  }catch(e){
+    // Show static editable services as fallback
+    services=[
+      {id:'static-1',icon:'🏢',title:'SaforaERP',title_bn:'SaforaERP',description:'Complete ERP for Bangladeshi businesses',is_active:true,sort_order:0},
+      {id:'static-2',icon:'🌐',title:'IT Infrastructure & Networking',title_bn:'আইটি অবকাঠামো',description:'LAN, WAN, Wi-Fi setup',is_active:true,sort_order:1},
+      {id:'static-3',icon:'🖥️',title:'Server & Storage',title_bn:'সার্ভার ও স্টোরেজ',description:'Cloud & local server setup',is_active:true,sort_order:2},
+      {id:'static-4',icon:'📷',title:'CCTV & Security',title_bn:'সিসিটিভি ও নিরাপত্তা',description:'IP/Analog CCTV installation',is_active:true,sort_order:3},
+      {id:'static-5',icon:'🤖',title:'AI Business Setup',title_bn:'AI ব্যবসা সেটআপ',description:'ChatGPT & AI tools integration',is_active:true,sort_order:4},
+    ];
+    render();
+    document.getElementById('save-alert').textContent='⚠️ Supabase not configured. Changes won\'t persist.';
+    document.getElementById('save-alert').className='cp-alert cp-alert-gold';
+    document.getElementById('save-alert').style.display='flex';
+  }
+  document.getElementById('svc-count').textContent=`(${services.length} total)`;
+}
+
+function render(){
+  const tb=document.getElementById('svc-tbody');
+  if(!services.length){tb.innerHTML='<tr><td colspan="6" style="text-align:center;padding:32px;color:var(--text-muted)">No services yet.</td></tr>';return;}
+  tb.innerHTML=services.map(s=>`
+    <tr>
+      <td style="font-size:1.5rem;text-align:center">${s.icon||'⚙️'}</td>
+      <td><div style="font-weight:600;font-size:0.875rem;color:var(--text)">${s.title}</div>${s.title_bn?`<div style="font-size:0.75rem;color:var(--text-muted)">${s.title_bn}</div>`:''}</td>
+      <td style="font-size:0.82rem;color:var(--text-muted);max-width:200px">${(s.description||'').substring(0,80)}${s.description?.length>80?'...':''}</td>
+      <td>
+        <label class="cp-toggle">
+          <input type="checkbox" ${s.is_active?'checked':''} onchange="toggleActive('${s.id}',this.checked)"/>
+          <span class="cp-toggle-slider"></span>
+        </label>
+      </td>
+      <td style="color:var(--text-muted);font-size:0.82rem">${s.sort_order||0}</td>
+      <td>
+        <div class="cp-actions">
+          <button onclick="editService('${s.id}')" class="cp-btn cp-btn-ghost">✏️ Edit</button>
+          <button onclick="deleteService('${s.id}')" class="cp-btn cp-btn-danger">🗑</button>
+        </div>
+      </td>
+    </tr>
+  `).join('');
+}
+
+function openAddService(){
+  document.getElementById('add-form').style.display='';
+  document.getElementById('form-title').textContent='+ Add New Service';
+  document.getElementById('edit-id').value='';
+  ['svc-icon','svc-title','svc-title-bn','svc-desc','svc-desc-bn'].forEach(id=>document.getElementById(id).value='');
+  document.getElementById('svc-order').value=services.length;
+  document.getElementById('svc-active').checked=true;
+  document.getElementById('add-form').scrollIntoView({behavior:'smooth'});
+}
+
+function editService(id){
+  const s=services.find(x=>x.id==id);
+  if(!s)return;
+  document.getElementById('add-form').style.display='';
+  document.getElementById('form-title').textContent='✏️ Edit Service';
+  document.getElementById('edit-id').value=id;
+  document.getElementById('svc-icon').value=s.icon||'';
+  document.getElementById('svc-title').value=s.title||'';
+  document.getElementById('svc-title-bn').value=s.title_bn||'';
+  document.getElementById('svc-desc').value=s.description||'';
+  document.getElementById('svc-desc-bn').value=s.description_bn||'';
+  document.getElementById('svc-order').value=s.sort_order||0;
+  document.getElementById('svc-active').checked=s.is_active!==false;
+  document.getElementById('add-form').scrollIntoView({behavior:'smooth'});
+}
+
+function closeForm(){ document.getElementById('add-form').style.display='none'; }
+
+async function saveService(){
+  const data={
+    icon:document.getElementById('svc-icon').value,
+    title:document.getElementById('svc-title').value,
+    title_bn:document.getElementById('svc-title-bn').value||null,
+    description:document.getElementById('svc-desc').value||null,
+    description_bn:document.getElementById('svc-desc-bn').value||null,
+    sort_order:parseInt(document.getElementById('svc-order').value)||0,
+    is_active:document.getElementById('svc-active').checked
+  };
+  if(!data.title){showToast('❌ Title required','error');return;}
+  try{
+    const sb=getSupabase();
+    const editId=document.getElementById('edit-id').value;
+    if(editId){
+      await sb.from('services').update(data).eq('id',editId);
+      showToast('✅ Service updated','success');
+    }else{
+      await sb.from('services').insert(data);
+      showToast('✅ Service added','success');
+    }
+    closeForm();
+    loadServices();
+  }catch(e){showToast('❌ '+e.message,'error');}
+}
+
+async function toggleActive(id,val){
+  try{
+    const sb=getSupabase();
+    await sb.from('services').update({is_active:val}).eq('id',id);
+    const s=services.find(x=>x.id==id);
+    if(s)s.is_active=val;
+    showToast(`✅ Service ${val?'activated':'deactivated'}`,'success');
+  }catch(e){showToast('❌ '+e.message,'error');}
+}
+
+async function deleteService(id){
+  if(!confirm('Delete this service?'))return;
+  try{
+    const sb=getSupabase();
+    await sb.from('services').delete().eq('id',id);
+    services=services.filter(s=>s.id!=id);
+    render();
+    showToast('🗑 Service deleted','success');
+  }catch(e){showToast('❌ '+e.message,'error');}
+}
+
+document.addEventListener('DOMContentLoaded',loadServices);
+</script>
+{% endblock %}

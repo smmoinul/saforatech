@@ -1,0 +1,222 @@
+{% extends "base.html" %}
+{% block title %}My Dashboard — SaforaTech{% endblock %}
+{% block content %}
+<div style="padding-top: var(--nav-h)"></div>
+<div style="background:var(--bg-section);padding:48px 0 32px">
+  <div class="container">
+    <div style="display:flex;align-items:center;gap:20px">
+      <div id="dash-avatar" style="width:64px;height:64px;background:linear-gradient(135deg,var(--primary),var(--accent));border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:1.6rem;font-weight:800;color:#fff;font-family:var(--font-display)">U</div>
+      <div>
+        <h1 style="font-family:var(--font-display);font-size:1.8rem;font-weight:800;color:var(--text)" id="dash-name">Loading...</h1>
+        <p style="color:var(--text-muted);font-size:0.9rem" id="dash-email"></p>
+        <span id="dash-role-badge" style="display:inline-block;padding:2px 10px;background:rgba(0,87,255,0.1);color:var(--primary);border-radius:100px;font-size:0.72rem;font-weight:700;margin-top:4px"></span>
+      </div>
+    </div>
+  </div>
+</div>
+
+<section>
+  <div class="container">
+    <div style="display:grid;grid-template-columns:240px 1fr;gap:32px;align-items:start">
+
+      <!-- Sidebar -->
+      <div class="card" style="padding:0;overflow:hidden">
+        <nav style="display:flex;flex-direction:column">
+          {% for item in [("👤","Profile","profile"),("✏️","My Posts","posts"),("🔔","Notifications","notifications"),("⚙️","Settings","settings")] %}
+          <a href="#{{ item[2] }}" onclick="showTab('{{ item[2] }}')" id="tab-btn-{{ item[2] }}" style="display:flex;align-items:center;gap:10px;padding:12px 20px;text-decoration:none;color:var(--text-muted);font-size:0.875rem;font-weight:500;border-bottom:1px solid var(--border);transition:all 0.2s">
+            <span>{{ item[0] }}</span>{{ item[1] }}
+          </a>
+          {% endfor %}
+          <button onclick="signOut()" style="display:flex;align-items:center;gap:10px;padding:12px 20px;border:none;background:none;color:#EF4444;font-size:0.875rem;font-weight:500;cursor:pointer;font-family:var(--font-body);text-align:left">
+            🚪 Sign Out
+          </button>
+        </nav>
+      </div>
+
+      <!-- Content -->
+      <div>
+        <!-- Profile Tab -->
+        <div id="tab-profile" class="tab-content">
+          <div class="card" style="padding:28px">
+            <h2 style="font-family:var(--font-display);font-weight:700;font-size:1.2rem;margin-bottom:20px">Edit Profile</h2>
+            <form id="profile-form" onsubmit="saveProfile(event)">
+              <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px">
+                <div class="form-group">
+                  <label class="form-label">Full Name</label>
+                  <input type="text" id="pf-name" class="form-control" placeholder="Your name" />
+                </div>
+                <div class="form-group">
+                  <label class="form-label">Username</label>
+                  <input type="text" id="pf-username" class="form-control" placeholder="@username" />
+                </div>
+              </div>
+              <div class="form-group">
+                <label class="form-label">Bio</label>
+                <textarea id="pf-bio" class="form-control" rows="3" placeholder="Tell us about yourself..."></textarea>
+              </div>
+              <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px">
+                <div class="form-group">
+                  <label class="form-label">Phone</label>
+                  <input type="tel" id="pf-phone" class="form-control" placeholder="+880 17XX XXXXXX" />
+                </div>
+                <div class="form-group">
+                  <label class="form-label">Company</label>
+                  <input type="text" id="pf-company" class="form-control" placeholder="Your company" />
+                </div>
+              </div>
+              <div id="profile-msg" class="auth-success hidden" style="margin-bottom:12px"></div>
+              <button type="submit" class="btn btn-primary" id="save-profile-btn">Save Changes</button>
+            </form>
+          </div>
+        </div>
+
+        <!-- Posts Tab -->
+        <div id="tab-posts" class="tab-content hidden">
+          <div class="card" style="padding:0;overflow:hidden">
+            <div class="admin-card-header" style="padding:16px 20px">
+              <span style="font-family:var(--font-display);font-weight:700">My Blog Posts</span>
+              <a href="/blog/new" class="btn btn-primary btn-sm">+ New Post</a>
+            </div>
+            <div id="my-posts-list" style="padding:20px;color:var(--text-muted);font-size:0.9rem;text-align:center;padding:40px">
+              Loading your posts...
+            </div>
+          </div>
+        </div>
+
+        <!-- Settings Tab -->
+        <div id="tab-settings" class="tab-content hidden">
+          <div class="card" style="padding:28px">
+            <h2 style="font-family:var(--font-display);font-weight:700;font-size:1.2rem;margin-bottom:20px">Account Settings</h2>
+            <div style="display:flex;flex-direction:column;gap:16px">
+              <div style="display:flex;align-items:center;justify-content:space-between;padding:16px;background:var(--bg-section);border-radius:var(--radius-sm)">
+                <div>
+                  <div style="font-weight:600;font-size:0.9rem">Change Password</div>
+                  <div style="font-size:0.8rem;color:var(--text-muted)">Update your account password</div>
+                </div>
+                <a href="/auth/reset-password" class="btn btn-ghost btn-sm">Change</a>
+              </div>
+              <div style="display:flex;align-items:center;justify-content:space-between;padding:16px;background:var(--bg-section);border-radius:var(--radius-sm)">
+                <div>
+                  <div style="font-weight:600;font-size:0.9rem;color:#EF4444">Delete Account</div>
+                  <div style="font-size:0.8rem;color:var(--text-muted)">Permanently remove your account</div>
+                </div>
+                <button class="btn btn-sm" style="background:rgba(239,68,68,0.1);color:#EF4444;border:1px solid rgba(239,68,68,0.2)" onclick="if(confirm('Are you sure?')) alert('Contact support to delete your account.')">Delete</button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Notifications Tab -->
+        <div id="tab-notifications" class="tab-content hidden">
+          <div class="card" style="padding:28px">
+            <h2 style="font-family:var(--font-display);font-weight:700;font-size:1.2rem;margin-bottom:20px">Notifications</h2>
+            <div style="text-align:center;padding:32px;color:var(--text-muted)">
+              <div style="font-size:2rem;margin-bottom:12px">🔔</div>
+              No new notifications
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</section>
+{% endblock %}
+
+{% block scripts %}
+<link rel="stylesheet" href="/static/css/auth.css" />
+<script>
+function showTab(name) {
+  document.querySelectorAll('.tab-content').forEach(t => t.classList.add('hidden'));
+  document.getElementById('tab-' + name)?.classList.remove('hidden');
+  document.querySelectorAll('[id^="tab-btn-"]').forEach(b => {
+    b.style.background = '';
+    b.style.color = 'var(--text-muted)';
+  });
+  const btn = document.getElementById('tab-btn-' + name);
+  if (btn) { btn.style.background = 'rgba(0,87,255,0.06)'; btn.style.color = 'var(--primary)'; }
+}
+
+async function loadDashboard() {
+  try {
+    const sb = getSupabase();
+    const { data: { user } } = await sb.auth.getUser();
+    if (!user) { window.location.href = '/'; return; }
+
+    const { data: profile } = await sb.from('profiles').select('*').eq('id', user.id).single();
+
+    // Fill header
+    const name = profile?.full_name || user.email.split('@')[0];
+    document.getElementById('dash-name').textContent = name;
+    document.getElementById('dash-email').textContent = user.email;
+    document.getElementById('dash-avatar').textContent = name[0].toUpperCase();
+    const roleEl = document.getElementById('dash-role-badge');
+    roleEl.textContent = (profile?.role || 'user').toUpperCase();
+
+    // Fill form
+    if (profile) {
+      document.getElementById('pf-name').value     = profile.full_name || '';
+      document.getElementById('pf-username').value = profile.username  || '';
+      document.getElementById('pf-bio').value      = profile.bio       || '';
+      document.getElementById('pf-phone').value    = profile.phone     || '';
+      document.getElementById('pf-company').value  = profile.company   || '';
+    }
+
+    // Load posts
+    const { data: posts } = await sb.from('blog_posts')
+      .select('id,title,status,created_at,views')
+      .eq('author_id', user.id)
+      .order('created_at', { ascending: false });
+
+    const postsEl = document.getElementById('my-posts-list');
+    if (!posts || posts.length === 0) {
+      postsEl.innerHTML = '<div style="text-align:center;padding:32px;color:var(--text-muted)"><div style="font-size:2rem;margin-bottom:8px">📝</div>No posts yet. <a href="/blog/new" style="color:var(--primary);font-weight:600">Write your first post →</a></div>';
+    } else {
+      postsEl.innerHTML = posts.map(p => `
+        <div style="display:flex;align-items:center;justify-content:space-between;padding:14px 20px;border-bottom:1px solid var(--border)">
+          <div>
+            <div style="font-weight:600;font-size:0.9rem;color:var(--text)">${p.title}</div>
+            <div style="font-size:0.78rem;color:var(--text-muted);margin-top:2px">${new Date(p.created_at).toLocaleDateString()} · 👁 ${p.views || 0}</div>
+          </div>
+          <span class="badge-status ${p.status === 'published' ? 'badge-success' : 'badge-warning'}">${p.status}</span>
+        </div>
+      `).join('');
+    }
+  } catch(e) {
+    console.warn('Supabase not configured yet.', e.message);
+    document.getElementById('dash-name').textContent = 'Demo User';
+    document.getElementById('dash-email').textContent = 'Set up Supabase to enable auth';
+  }
+}
+
+async function saveProfile(e) {
+  e.preventDefault();
+  const btn = document.getElementById('save-profile-btn');
+  btn.disabled = true; btn.textContent = 'Saving...';
+  try {
+    const sb = getSupabase();
+    const { data: { user } } = await sb.auth.getUser();
+    await sb.from('profiles').update({
+      full_name: document.getElementById('pf-name').value,
+      username:  document.getElementById('pf-username').value,
+      bio:       document.getElementById('pf-bio').value,
+      phone:     document.getElementById('pf-phone').value,
+      company:   document.getElementById('pf-company').value,
+      updated_at: new Date().toISOString()
+    }).eq('id', user.id);
+    const msg = document.getElementById('profile-msg');
+    msg.textContent = '✅ Profile saved successfully!';
+    msg.classList.remove('hidden');
+    setTimeout(() => msg.classList.add('hidden'), 3000);
+  } catch(err) {
+    alert('Error saving profile: ' + err.message);
+  }
+  btn.disabled = false; btn.textContent = 'Save Changes';
+}
+
+document.addEventListener('DOMContentLoaded', () => {
+  showTab('profile');
+  loadDashboard();
+});
+</script>
+{% endblock %}

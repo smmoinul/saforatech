@@ -1,0 +1,521 @@
+{% extends "base.html" %}
+
+{% block title %}SaforaTech — Smart IT Solutions for Smart Business{% endblock %}
+
+{% block content %}
+
+<!-- ═══════════════════════════════════════════════════════════ -->
+<!-- HERO SECTION -->
+<!-- ═══════════════════════════════════════════════════════════ -->
+<section class="hero" id="home">
+  <div class="container">
+    <div class="hero-grid">
+
+      <!-- Left: Content -->
+      <div class="hero-content">
+        <div class="hero-badge" data-i18n="hero_badge">✨ Let's Build Your Dream with SaforaTech</div>
+
+        <h1 class="hero-title">
+          <span data-i18n="hero_title_1">Empowering Business</span><br/>
+          <span class="gradient-text" data-i18n="hero_title_2">with Technology</span>
+        </h1>
+
+        <p class="hero-desc" data-i18n="hero_desc">
+          SaforaTech provides complete IT infrastructure, networking, server solutions, CCTV, cloud services and IT consultancy for businesses across Bangladesh.
+        </p>
+
+        <div class="hero-actions">
+          <a href="/services" class="btn btn-primary btn-lg" data-i18n="hero_btn1">Our Services</a>
+          <a href="/contact" class="btn btn-outline btn-lg" data-i18n="hero_btn2">Contact Us</a>
+        </div>
+
+        <div class="hero-stats">
+          <div class="hero-stat">
+            <span class="hero-stat-value" data-target="500" data-suffix="+">500+</span>
+            <span class="hero-stat-label" data-i18n="stat_projects">Projects Done</span>
+          </div>
+          <div class="hero-stat">
+            <span class="hero-stat-value" data-target="300" data-suffix="+">300+</span>
+            <span class="hero-stat-label" data-i18n="stat_clients">Happy Clients</span>
+          </div>
+          <div class="hero-stat">
+            <span class="hero-stat-value" data-target="12" data-suffix="+">12+</span>
+            <span class="hero-stat-label" data-i18n="stat_services">Service Types</span>
+          </div>
+          <div class="hero-stat">
+            <span class="hero-stat-value" style="color:var(--gold)" data-target="99" data-suffix="%">99%</span>
+            <span class="hero-stat-label" data-i18n="stat_satisfaction">Satisfaction</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- ═══ HERO SLIDER — Business Growth Model ═══ -->
+      <div class="hero-visual">
+        <div class="hero-slider" id="heroSlider">
+
+          <!-- Slide dots -->
+          <div class="slider-dots">
+            <button class="dot active" onclick="goSlide(0)"></button>
+            <button class="dot" onclick="goSlide(1)"></button>
+            <button class="dot" onclick="goSlide(2)"></button>
+          </div>
+
+          <!-- ── SLIDE 1: Infrastructure Setup ── -->
+          <div class="slide slide-active" id="slide-0">
+            <div class="slide-header">
+              <div class="slide-icon-wrap" style="background:linear-gradient(135deg,#0057FF,#00C6FF)">
+                <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round"><rect x="2" y="3" width="20" height="14" rx="2"/><path d="M8 21h8M12 17v4"/><path d="M6 8h.01M10 8h4"/></svg>
+              </div>
+              <div>
+                <div class="slide-tag">Step 01</div>
+                <div class="slide-title">IT Infrastructure Setup</div>
+              </div>
+            </div>
+
+            <p class="slide-desc">আমরা আপনার অফিসের নেটওয়ার্ক, সার্ভার ও সিকিউরিটি সিস্টেম সম্পূর্ণ প্রফেশনালভাবে সেটআপ করি।</p>
+
+            <!-- Process flow -->
+            <div class="slide-flow">
+              <div class="flow-step done">
+                <div class="flow-dot"></div>
+                <span>Network Design</span>
+              </div>
+              <div class="flow-line"></div>
+              <div class="flow-step done">
+                <div class="flow-dot"></div>
+                <span>Hardware Install</span>
+              </div>
+              <div class="flow-line"></div>
+              <div class="flow-step active-step">
+                <div class="flow-dot"></div>
+                <span>Security Config</span>
+              </div>
+              <div class="flow-line faded"></div>
+              <div class="flow-step faded">
+                <div class="flow-dot"></div>
+                <span>Go Live</span>
+              </div>
+            </div>
+
+            <!-- Mini stats -->
+            <div class="slide-stats">
+              <div class="sstat">
+                <div class="sstat-val">3 Days</div>
+                <div class="sstat-lbl">Avg Setup Time</div>
+              </div>
+              <div class="sstat">
+                <div class="sstat-val">99.9%</div>
+                <div class="sstat-lbl">Network Uptime</div>
+              </div>
+              <div class="sstat">
+                <div class="sstat-val">500+</div>
+                <div class="sstat-lbl">Offices Done</div>
+              </div>
+            </div>
+          </div>
+
+          <!-- ── SLIDE 2: Business Digitalization ── -->
+          <div class="slide" id="slide-1">
+            <div class="slide-header">
+              <div class="slide-icon-wrap" style="background:linear-gradient(135deg,#00C6FF,#00D4AA)">
+                <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round"><path d="M12 2L2 7l10 5 10-5-10-5z"/><path d="M2 17l10 5 10-5M2 12l10 5 10-5"/></svg>
+              </div>
+              <div>
+                <div class="slide-tag">Step 02</div>
+                <div class="slide-title">Business Digitalization</div>
+              </div>
+            </div>
+
+            <p class="slide-desc">SaforaERP দিয়ে আপনার পুরো ব্যবসা ডিজিটাল করুন — ইনভেন্টরি, বিক্রয়, HR সব এক জায়গায়।</p>
+
+            <!-- Growth chart bars -->
+            <div class="slide-chart">
+              <div class="chart-label">Business Growth After Digitalization</div>
+              <div class="chart-bars">
+                <div class="chart-col">
+                  <div class="bar-wrap"><div class="bar" style="height:35%;background:rgba(0,87,255,0.25)"></div></div>
+                  <span>Before</span>
+                </div>
+                <div class="chart-col">
+                  <div class="bar-wrap"><div class="bar animated-bar" style="height:65%;background:linear-gradient(180deg,#00C6FF,#0057FF)"></div></div>
+                  <span>3 Mo</span>
+                </div>
+                <div class="chart-col">
+                  <div class="bar-wrap"><div class="bar animated-bar" style="height:80%;background:linear-gradient(180deg,#00D4AA,#00C6FF);animation-delay:0.15s"></div></div>
+                  <span>6 Mo</span>
+                </div>
+                <div class="chart-col">
+                  <div class="bar-wrap"><div class="bar animated-bar" style="height:100%;background:linear-gradient(180deg,#00D4AA,#0057FF);animation-delay:0.3s"></div></div>
+                  <span>1 Year</span>
+                </div>
+              </div>
+            </div>
+
+            <div class="slide-stats">
+              <div class="sstat">
+                <div class="sstat-val" style="color:#00D4AA">40%</div>
+                <div class="sstat-lbl">Cost Saved</div>
+              </div>
+              <div class="sstat">
+                <div class="sstat-val" style="color:#00C6FF">3x</div>
+                <div class="sstat-lbl">Efficiency</div>
+              </div>
+              <div class="sstat">
+                <div class="sstat-val" style="color:#0057FF">Real-time</div>
+                <div class="sstat-lbl">Reports</div>
+              </div>
+            </div>
+          </div>
+
+          <!-- ── SLIDE 3: 24/7 Support & Growth ── -->
+          <div class="slide" id="slide-2">
+            <div class="slide-header">
+              <div class="slide-icon-wrap" style="background:linear-gradient(135deg,#8B5CF6,#0057FF)">
+                <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07A19.5 19.5 0 0 1 4.69 13.5a19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 3.6 2.69h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L7.91 10a16 16 0 0 0 6.09 6.09l.94-.94a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"/></svg>
+              </div>
+              <div>
+                <div class="slide-tag">Step 03</div>
+                <div class="slide-title">24/7 Support & Scale</div>
+              </div>
+            </div>
+
+            <p class="slide-desc">আমাদের AMC প্যাকেজে যুক্ত হন — সার্বক্ষণিক সাপোর্ট, প্রোঅ্যাক্টিভ মনিটরিং ও স্কেলেবল আইটি সলিউশন।</p>
+
+            <!-- Support tiers -->
+            <div class="support-tiers">
+              <div class="tier">
+                <div class="tier-icon" style="background:rgba(0,87,255,0.12);color:#0057FF">B</div>
+                <div class="tier-info">
+                  <div class="tier-name">BasicCare</div>
+                  <div class="tier-time">9AM–5PM Support</div>
+                </div>
+                <div class="tier-ping" style="background:#F59E0B"></div>
+              </div>
+              <div class="tier tier-active">
+                <div class="tier-icon" style="background:rgba(0,198,255,0.15);color:#00C6FF">S</div>
+                <div class="tier-info">
+                  <div class="tier-name">SmartBiz</div>
+                  <div class="tier-time">9AM–8PM Support</div>
+                </div>
+                <div class="tier-ping" style="background:#00C6FF"></div>
+              </div>
+              <div class="tier">
+                <div class="tier-icon" style="background:rgba(16,185,129,0.12);color:#10B981">E</div>
+                <div class="tier-info">
+                  <div class="tier-name">Enterprise+</div>
+                  <div class="tier-time">24/7 Always On</div>
+                </div>
+                <div class="tier-ping" style="background:#10B981;animation:ping 1s infinite"></div>
+              </div>
+            </div>
+
+            <div class="slide-stats">
+              <div class="sstat">
+                <div class="sstat-val" style="color:#8B5CF6">&lt; 1hr</div>
+                <div class="sstat-lbl">Response Time</div>
+              </div>
+              <div class="sstat">
+                <div class="sstat-val">300+</div>
+                <div class="sstat-lbl">Happy Clients</div>
+              </div>
+              <div class="sstat">
+                <div class="sstat-val" style="color:#10B981">99%</div>
+                <div class="sstat-lbl">Satisfaction</div>
+              </div>
+            </div>
+          </div>
+
+        </div><!-- /hero-slider -->
+      </div><!-- /hero-visual -->
+
+    </div><!-- /hero-grid -->
+  </div><!-- /container -->
+</section><!-- /hero -->
+
+<!-- ═══════════════════════════════════════════════════════════ -->
+<!-- STATS BANNER -->
+<!-- ═══════════════════════════════════════════════════════════ -->
+<div class="stats-banner">
+  <div class="container">
+    <div class="stats-grid">
+      <div style="text-align:center" class="fade-up">
+        <div class="stat-value" data-target="500" data-suffix="+">500+</div>
+        <div class="stat-label" data-i18n="stat_projects">Projects Done</div>
+      </div>
+      <div style="text-align:center" class="fade-up delay-1">
+        <div class="stat-value" data-target="300" data-suffix="+">300+</div>
+        <div class="stat-label" data-i18n="stat_clients">Happy Clients</div>
+      </div>
+      <div style="text-align:center" class="fade-up delay-2">
+        <div class="stat-value" data-target="12" data-suffix="+">12+</div>
+        <div class="stat-label" data-i18n="stat_services">Service Types</div>
+      </div>
+      <div style="text-align:center" class="fade-up delay-3">
+        <div class="stat-value" style="color:var(--gold-light)" data-target="99" data-suffix="%">99%</div>
+        <div class="stat-label" data-i18n="stat_satisfaction">Satisfaction</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════════════════════ -->
+<!-- SERVICES SECTION -->
+<!-- ═══════════════════════════════════════════════════════════ -->
+<section class="services-section" id="services">
+  <div class="container">
+    <div class="section-header fade-up">
+      <div class="section-tag" data-i18n="services_tag">What We Offer</div>
+      <h2 class="section-title" data-i18n="services_title">Complete IT Solutions</h2>
+      <p class="section-desc" data-i18n="services_desc">From network setup to cloud migration — we handle all your technology needs under one roof.</p>
+    </div>
+
+    <div class="grid grid-3" style="margin-top:48px">
+      {% set services = [
+        {"icon":"🏢","title":"SaforaERP — Business Software","title_bn":"SaforaERP — ব্যবসা সফটওয়্যার","desc":"Complete ERP solution for Bangladeshi businesses — Inventory, Sales, HR, Payroll, POS & Financial Reports in one platform.","desc_bn":"বাংলাদেশি ব্যবসার জন্য সম্পূর্ণ ERP — ইনভেন্টরি, বিক্রয়, HR, পে-রোল, POS ও আর্থিক রিপোর্ট।","link":"https://erp.saforatech.com","link_label":"Try SaforaERP →","featured":True},
+        {"icon":"🌐","title":"IT Infrastructure & Networking","title_bn":"আইটি অবকাঠামো ও নেটওয়ার্কিং","desc":"LAN, WAN, Wi-Fi setup. Router, Switch, MikroTik, Cisco configuration. Network security & firewall.","desc_bn":"LAN, WAN, Wi-Fi সেটআপ। রাউটার, সুইচ, MikroTik কনফিগারেশন। নেটওয়ার্ক সিকিউরিটি।"},
+        {"icon":"🖥️","title":"Server & Storage","title_bn":"সার্ভার ও স্টোরেজ","desc":"Local & Cloud server setup (AWS, Azure, Google Cloud). Virtualization, NAS/SAN, data backup.","desc_bn":"লোকাল ও ক্লাউড সার্ভার সেটআপ। ভার্চুয়ালাইজেশন, ডেটা ব্যাকআপ।"},
+        {"icon":"📷","title":"CCTV & Security","title_bn":"সিসিটিভি ও নিরাপত্তা","desc":"IP/Analog CCTV installation. Biometric attendance, access control, smart office automation.","desc_bn":"IP/এনালগ সিসিটিভি ইন্সটলেশন। বায়োমেট্রিক অ্যাটেনডেন্স, অ্যাক্সেস কন্ট্রোল।"},
+        {"icon":"💻","title":"System & Software","title_bn":"সিস্টেম ও সফটওয়্যার","desc":"OS installation, ERP/POS setup, custom software development, Office & productivity tools.","desc_bn":"OS ইন্সটলেশন, ERP/POS সেটআপ, কাস্টম সফটওয়্যার ডেভেলপমেন্ট।"},
+        {"icon":"☁️","title":"Web & Cloud Services","title_bn":"ওয়েব ও ক্লাউড সেবা","desc":"Website design & hosting, domain/email setup, Google Workspace, Microsoft 365 configuration.","desc_bn":"ওয়েবসাইট ডিজাইন ও হোস্টিং, ডোমেইন/ইমেইল সেটআপ, Google Workspace।"},
+        {"icon":"🎓","title":"IT Consultancy & Training","title_bn":"আইটি পরামর্শ ও প্রশিক্ষণ","desc":"IT planning for new businesses, cost optimization, cybersecurity training, corporate IT workshops.","desc_bn":"নতুন ব্যবসার জন্য আইটি পরিকল্পনা, সাইবার সিকিউরিটি প্রশিক্ষণ।"},
+        {"icon":"📱","title":"Mobile & App Support","title_bn":"মোবাইল ও অ্যাপ সাপোর্ট","desc":"Android/iOS app deployment, business app integration, MDM device management.","desc_bn":"Android/iOS অ্যাপ ডেপ্লয়মেন্ট, MDM ডিভাইস ম্যানেজমেন্ট।"},
+        {"icon":"📈","title":"Digital Marketing","title_bn":"ডিজিটাল মার্কেটিং","desc":"Facebook & Google Ads, SEO, social media management, Google Business Profile setup.","desc_bn":"Facebook ও Google Ads, SEO, সোশ্যাল মিডিয়া ম্যানেজমেন্ট।"},
+        {"icon":"🤖","title":"AI Business Setup","title_bn":"AI ব্যবসা সেটআপ","desc":"AI tools integration for your business — ChatGPT, automation workflows, AI chatbots, smart reporting & digital transformation consulting.","desc_bn":"ব্যবসায় AI টুলস ইন্টিগ্রেশন — ChatGPT, অটোমেশন, AI চ্যাটবট, স্মার্ট রিপোর্টিং।","link":"/services#ai","link_label":"Explore AI →"},
+        {"icon":"🔧","title":"Maintenance & AMC","title_bn":"রক্ষণাবেক্ষণ ও AMC","desc":"Monthly/yearly IT support packages, on-site & remote maintenance, emergency response.","desc_bn":"মাসিক/বার্ষিক আইটি সাপোর্ট প্যাকেজ, অন-সাইট ও রিমোট মেইনটেন্যান্স।"}
+      ] %}
+
+      {% for service in services %}
+      <div class="service-card fade-up {% if service.get('featured') %}service-card-featured{% endif %}" style="transition-delay: {{ loop.index0 * 0.08 }}s{% if service.get('featured') %};border-color:var(--primary);background:linear-gradient(135deg,rgba(0,87,255,0.04),rgba(0,198,255,0.04)){% endif %}">
+        {% if service.get('featured') %}
+        <div style="display:inline-flex;align-items:center;gap:5px;background:rgba(248,164,27,0.12);color:var(--gold-dark);padding:3px 10px;border-radius:100px;font-size:0.7rem;font-weight:700;margin-bottom:12px;border:1px solid var(--gold-border)">⭐ Featured Product</div>
+        {% endif %}
+        <div class="service-icon">{{ service.icon }}</div>
+        <h3 class="card-title" data-en="{{ service.title }}" data-bn="{{ service.title_bn }}">{{ service.title }}</h3>
+        <p class="card-desc" data-en="{{ service.desc }}" data-bn="{{ service.desc_bn }}">{{ service.desc }}</p>
+        <a href="{{ service.get('link', '/services') }}" {% if service.get('link') %}target="_blank"{% endif %} style="display:inline-flex;align-items:center;gap:6px;margin-top:16px;font-size:0.85rem;font-weight:700;color:var(--primary);text-decoration:none">
+          {{ service.get('link_label', 'Learn More →') }}
+        </a>
+      </div>
+      {% endfor %}
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════════════════════════════════════════════════════ -->
+<!-- WHY CHOOSE US -->
+<!-- ═══════════════════════════════════════════════════════════ -->
+<section id="why-us">
+  <div class="container">
+    <div class="section-header fade-up">
+      <div class="section-tag">Why SaforaTech</div>
+      <h2 class="section-title">Why Choose <span class="gradient-text">SaforaTech?</span></h2>
+    </div>
+    <div class="grid grid-4">
+      {% for item in [
+        {"icon":"🏠","title":"One-Stop IT Shop","desc":"All your tech needs under one roof — no need to juggle multiple vendors."},
+        {"icon":"⚡","title":"Fast Response","desc":"We respond quickly, on-site or remotely, to keep your business running."},
+        {"icon":"💰","title":"Affordable Plans","desc":"Flexible pricing that suits startups, SMEs, and enterprises alike."},
+        {"icon":"🔐","title":"Data Security","desc":"Your data is protected with enterprise-grade security practices."}
+      ] %}
+      <div class="card fade-up" style="transition-delay:{{ loop.index0 * 0.1 }}s">
+        <div class="card-icon">{{ item.icon }}</div>
+        <h3 class="card-title">{{ item.title }}</h3>
+        <p class="card-desc">{{ item.desc }}</p>
+      </div>
+      {% endfor %}
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════════════════════════════════════════════════════ -->
+<!-- PRICING -->
+<!-- ═══════════════════════════════════════════════════════════ -->
+<section style="background:var(--bg-section)" id="pricing">
+  <div class="container">
+    <div class="section-header fade-up">
+      <div class="section-tag" data-i18n="pricing_tag">Pricing Plans</div>
+      <h2 class="section-title" data-i18n="pricing_title">Simple, Transparent Pricing</h2>
+      <p class="section-desc" data-i18n="pricing_desc">Choose a plan that fits your business size and requirements.</p>
+    </div>
+
+    <div class="grid grid-4" style="margin-top:48px;align-items:start">
+
+      <!-- BasicCare -->
+      <div class="pricing-card fade-up">
+        <div style="margin-bottom:20px">
+          <div style="font-size:1.5rem;margin-bottom:8px">🔹</div>
+          <h3 style="font-family:var(--font-display);font-weight:800;color:var(--text);margin-bottom:4px">BasicCare</h3>
+          <p style="font-size:0.8rem;color:var(--text-muted)">For small businesses</p>
+        </div>
+        <div class="pricing-price">৳3,500</div>
+        <div class="pricing-period">– ৳5,000 / month</div>
+        <ul class="pricing-features">
+          <li>OS & Software Installation</li>
+          <li>Network Setup (1 Router + 5 PCs)</li>
+          <li>CCTV up to 4 Cameras</li>
+          <li>Remote Support (9AM–5PM)</li>
+        </ul>
+        <a href="/contact" class="btn btn-outline" style="width:100%;justify-content:center">Get Started</a>
+      </div>
+
+      <!-- SmartBiz -->
+      <div class="pricing-card popular fade-up delay-1">
+        <div class="pricing-badge" data-i18n="most_popular">Most Popular</div>
+        <div style="margin-bottom:20px">
+          <div style="font-size:1.5rem;margin-bottom:8px">🔹</div>
+          <h3 style="font-family:var(--font-display);font-weight:800;color:var(--text);margin-bottom:4px">SmartBiz</h3>
+          <p style="font-size:0.8rem;color:var(--text-muted)">For growing businesses</p>
+        </div>
+        <div class="pricing-price">৳8,000</div>
+        <div class="pricing-period">– ৳12,000 / month</div>
+        <ul class="pricing-features">
+          <li>All BasicCare features</li>
+          <li>Website Maintenance (1 site)</li>
+          <li>Wi-Fi Optimization</li>
+          <li>10 PCs Network Maintenance</li>
+          <li>CCTV up to 8 Cameras</li>
+          <li>Support: 9AM–8PM</li>
+        </ul>
+        <a href="/contact" class="btn btn-primary" style="width:100%;justify-content:center">Get Started</a>
+      </div>
+
+      <!-- Enterprise+ -->
+      <div class="pricing-card fade-up delay-2">
+        <div style="margin-bottom:20px">
+          <div style="font-size:1.5rem;margin-bottom:8px">🔹</div>
+          <h3 style="font-family:var(--font-display);font-weight:800;color:var(--text);margin-bottom:4px">Enterprise+</h3>
+          <p style="font-size:0.8rem;color:var(--text-muted)">For large organizations</p>
+        </div>
+        <div class="pricing-price">৳18,000</div>
+        <div class="pricing-period">– ৳25,000 / month</div>
+        <ul class="pricing-features">
+          <li>Full Network & Server Support</li>
+          <li>Cloud & Local Backup System</li>
+          <li>Cybersecurity Monitoring</li>
+          <li>Up to 25 PCs + Server Setup</li>
+          <li>24/7 Support</li>
+          <li>Dedicated Account Manager</li>
+        </ul>
+        <a href="/contact" class="btn btn-outline" style="width:100%;justify-content:center">Get Started</a>
+      </div>
+
+      <!-- Custom -->
+      <div class="pricing-card fade-up delay-3" style="background:linear-gradient(135deg,var(--primary),#0040CC);border-color:transparent;color:#fff">
+        <div style="margin-bottom:20px">
+          <div style="font-size:1.5rem;margin-bottom:8px">✨</div>
+          <h3 style="font-family:var(--font-display);font-weight:800;color:#fff;margin-bottom:4px">Custom Plan</h3>
+          <p style="font-size:0.8rem;opacity:0.8">Tailored to your needs</p>
+        </div>
+        <div style="font-size:2rem;font-weight:800;font-family:var(--font-display)">Custom</div>
+        <div style="font-size:0.85rem;opacity:0.75;margin-top:4px">flexible pricing</div>
+        <ul style="list-style:none;margin:24px 0;display:flex;flex-direction:column;gap:12px">
+          <li style="display:flex;gap:10px;font-size:0.875rem;opacity:0.9"><span>✓</span> Tailor-made solutions</li>
+          <li style="display:flex;gap:10px;font-size:0.875rem;opacity:0.9"><span>✓</span> Flexible pricing model</li>
+          <li style="display:flex;gap:10px;font-size:0.875rem;opacity:0.9"><span>✓</span> Custom support hours</li>
+          <li style="display:flex;gap:10px;font-size:0.875rem;opacity:0.9"><span>✓</span> Any service combination</li>
+        </ul>
+        <a href="/contact" style="display:flex;align-items:center;justify-content:center;padding:12px;background:rgba(255,255,255,0.2);border:2px solid rgba(255,255,255,0.4);border-radius:8px;color:#fff;font-weight:600;text-decoration:none;font-size:0.9rem;transition:all 0.25s">Contact Us</a>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════════════════════════════════════════════════════ -->
+<!-- TESTIMONIALS -->
+<!-- ═══════════════════════════════════════════════════════════ -->
+<section id="testimonials">
+  <div class="container">
+    <div class="section-header fade-up">
+      <div class="section-tag">Client Reviews</div>
+      <h2 class="section-title">What Our <span class="gradient-text">Clients Say</span></h2>
+    </div>
+    <div class="grid grid-3">
+      {% for t in [
+        {"name":"Rafiqul Islam","company":"Khulna Trading Co.","stars":"★★★★★","text":"SaforaTech set up our entire office network and CCTV system. Extremely professional and responsive. Highly recommended for any IT needs in Khulna."},
+        {"name":"Nasreen Akter","company":"Future Academy","stars":"★★★★★","text":"They migrated our school management system to the cloud smoothly. Zero downtime. The team is very knowledgeable and supportive."},
+        {"name":"Karim Hossain","company":"Delta Pharma Ltd.","stars":"★★★★★","text":"Best IT support company in the region. We've been using their Enterprise plan for 2 years. 24/7 support is a game-changer for our operations."},
+        {"name":"Shirin Begum","company":"Al-Amin Hospital","stars":"★★★★☆","text":"Excellent CCTV installation and biometric attendance system. The after-sales support is outstanding. Quick response every time."},
+        {"name":"Mahbub Rahman","company":"BD Agro Tech","stars":"★★★★★","text":"SaforaTech helped us set up our entire cloud infrastructure. Their pricing is competitive and service is top-notch."},
+        {"name":"Fariha Jahan","company":"Tech Startup Khulna","stars":"★★★★★","text":"Our go-to IT partner. From server setup to website maintenance, they handle everything seamlessly. Moinul bhai is very helpful."}
+      ] %}
+      <div class="testimonial-card fade-up" style="transition-delay:{{ loop.index0 * 0.08 }}s">
+        <div class="testimonial-stars">{{ t.stars }}</div>
+        <p class="testimonial-text">"{{ t.text }}"</p>
+        <div class="testimonial-author">
+          <div class="testimonial-avatar">{{ t.name[0] }}</div>
+          <div>
+            <div style="font-weight:700;font-size:0.9rem;color:var(--text)">{{ t.name }}</div>
+            <div style="font-size:0.8rem;color:var(--text-muted)">{{ t.company }}</div>
+          </div>
+        </div>
+      </div>
+      {% endfor %}
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════════════════════════════════════════════════════ -->
+<!-- FAQ -->
+<!-- ═══════════════════════════════════════════════════════════ -->
+<section style="background:var(--bg-section)" id="faq">
+  <div class="container">
+    <div class="section-header fade-up">
+      <div class="section-tag">FAQ</div>
+      <h2 class="section-title">Frequently Asked <span class="gradient-text">Questions</span></h2>
+    </div>
+    <div style="max-width:760px;margin:0 auto" class="fade-up">
+      {% for faq in [
+        {"q":"What areas do you serve?","a":"SaforaTech primarily serves Khulna city and surrounding districts. We also provide remote IT support across all of Bangladesh through our online support channels."},
+        {"q":"How quickly do you respond to support requests?","a":"BasicCare plan: response within 4 hours during business hours. SmartBiz: 2 hours during extended hours. Enterprise+: 24/7 with response within 1 hour. For emergency cases, we prioritize all plans."},
+        {"q":"Do you offer one-time services without a monthly plan?","a":"Yes! You can hire us for one-time IT setups, CCTV installations, network configuration, or any specific project. Contact us for a custom quote."},
+        {"q":"What brands do you work with?","a":"We work with Cisco, MikroTik, TP-Link, Ubiquiti, Hikvision, Dahua, Dell, HP, and many other leading brands. We are vendor-neutral and recommend the best solution for your budget."},
+        {"q":"Can you help migrate our data to the cloud?","a":"Absolutely! We specialize in cloud migration to AWS, Google Cloud, and Microsoft Azure. We ensure zero data loss and minimal downtime during migration."},
+        {"q":"আপনারা কি বাংলায় সাপোর্ট দেন?","a":"হ্যাঁ! আমরা সম্পূর্ণ বাংলায় সাপোর্ট প্রদান করি। আমাদের টিম বাংলাদেশি এবং বাংলায় কমিউনিকেট করতে স্বাচ্ছন্দ্যবোধ করি।"}
+      ] %}
+      <div class="faq-item">
+        <div class="faq-question">
+          <span>{{ faq.q }}</span>
+          <span class="faq-icon">+</span>
+        </div>
+        <div class="faq-answer">{{ faq.a }}</div>
+      </div>
+      {% endfor %}
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════════════════════════════════════════════════════ -->
+<!-- CONTACT CTA -->
+<!-- ═══════════════════════════════════════════════════════════ -->
+<section id="contact">
+  <div class="container">
+    <div style="background:linear-gradient(135deg,var(--primary) 0%,#0040CC 100%);border-radius:var(--radius-lg);padding:64px 48px;text-align:center;color:#fff" class="fade-up cta-gradient">
+      <div class="section-tag" style="background:rgba(255,255,255,0.2);color:#fff;margin-bottom:20px" data-i18n="contact_tag">Get In Touch</div>
+      <h2 style="font-family:var(--font-display);font-size:clamp(2rem,4vw,2.8rem);font-weight:800;margin-bottom:16px;letter-spacing:-1px" data-i18n="contact_title">Let's Work Together</h2>
+      <p style="font-size:1.05rem;opacity:0.85;max-width:500px;margin:0 auto 40px;line-height:1.8" data-i18n="contact_desc">Tell us about your IT needs and we'll get back to you within 24 hours.</p>
+      <div style="display:flex;gap:16px;justify-content:center;flex-wrap:wrap">
+        <a href="/contact" class="btn" style="background:#fff;color:var(--primary);font-size:1rem;padding:14px 36px">Contact Us</a>
+        <a href="https://wa.me/8801727666136" class="btn" style="background:rgba(255,255,255,0.15);border:2px solid rgba(255,255,255,0.4);color:#fff;font-size:1rem;padding:14px 36px" target="_blank">
+          💬 WhatsApp Now
+        </a>
+      </div>
+      <div style="display:flex;gap:40px;justify-content:center;margin-top:40px;flex-wrap:wrap">
+        <div>
+          <div style="font-size:1.1rem;font-weight:700">📞 +880 1727 666136</div>
+          <div style="font-size:0.8rem;opacity:0.75;margin-top:2px">Call or WhatsApp</div>
+        </div>
+        <div>
+          <div style="font-size:1.1rem;font-weight:700">✉️ saforatech@gmail.com</div>
+          <div style="font-size:0.8rem;opacity:0.75;margin-top:2px">Email us anytime</div>
+        </div>
+        <div>
+          <div style="font-size:1.1rem;font-weight:700">📍 Khulna, Bangladesh</div>
+          <div style="font-size:0.8rem;opacity:0.75;margin-top:2px">Head Office</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+{% endblock %}

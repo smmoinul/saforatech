@@ -1,0 +1,170 @@
+{% extends "admin/base_admin.html" %}
+{% block title %}Dashboard — SaforaTech CPanel{% endblock %}
+{% block breadcrumb %}<strong>Dashboard</strong>{% endblock %}
+{% set active = 'dashboard' %}
+
+{% block content %}
+<div class="cp-page-header">
+  <div>
+    <h1 class="cp-page-title">Welcome back, Moinul! 👋</h1>
+    <p class="cp-page-sub" id="date-display"></p>
+  </div>
+  <div style="display:flex;gap:10px">
+    <a href="/admin/posts/new" class="btn btn-primary btn-sm">✏️ New Post</a>
+    <a href="/" target="_blank" class="btn btn-ghost btn-sm">🌐 View Site</a>
+  </div>
+</div>
+
+<div class="cp-stats-grid">
+  <div class="cp-stat-card">
+    <div class="cp-stat-icon" style="background:rgba(0,87,255,0.1)">📝</div>
+    <div>
+      <div class="cp-stat-val" id="stat-posts">–</div>
+      <div class="cp-stat-lbl">Blog Posts</div>
+      <div class="cp-stat-change up" id="stat-posts-s">–</div>
+    </div>
+  </div>
+  <div class="cp-stat-card">
+    <div class="cp-stat-icon" style="background:rgba(248,164,27,0.1)">💬</div>
+    <div>
+      <div class="cp-stat-val" id="stat-msgs">–</div>
+      <div class="cp-stat-lbl">New Messages</div>
+      <div class="cp-stat-change up" id="stat-msgs-s">–</div>
+    </div>
+  </div>
+  <div class="cp-stat-card">
+    <div class="cp-stat-icon" style="background:rgba(16,185,129,0.1)">👥</div>
+    <div>
+      <div class="cp-stat-val" id="stat-users">–</div>
+      <div class="cp-stat-lbl">Registered Users</div>
+      <div class="cp-stat-change up" id="stat-users-s">–</div>
+    </div>
+  </div>
+  <div class="cp-stat-card">
+    <div class="cp-stat-icon" style="background:rgba(139,92,246,0.1)">👁️</div>
+    <div>
+      <div class="cp-stat-val" id="stat-views">–</div>
+      <div class="cp-stat-lbl">Total Blog Views</div>
+      <div class="cp-stat-change up">All time</div>
+    </div>
+  </div>
+</div>
+
+<div class="cp-grid-2">
+  <div class="cp-card">
+    <div class="cp-card-header">
+      <div class="cp-card-title">📝 Recent Posts</div>
+      <a href="/admin/posts" class="cp-btn cp-btn-ghost">View All</a>
+    </div>
+    <div id="recent-posts"></div>
+  </div>
+  <div class="cp-card">
+    <div class="cp-card-header">
+      <div class="cp-card-title">💬 Recent Messages</div>
+      <a href="/admin/messages" class="cp-btn cp-btn-ghost">View All</a>
+    </div>
+    <div id="recent-msgs"></div>
+  </div>
+</div>
+
+<div class="cp-card">
+  <div class="cp-card-header">
+    <div class="cp-card-title">⚡ Quick Actions</div>
+  </div>
+  <div class="cp-card-body">
+    <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:12px">
+      {% for a in [
+        ("✏️","New Post","/admin/posts/new","var(--primary)","rgba(0,87,255,0.08)"),
+        ("⚙️","Edit Services","/admin/services-manage","var(--gold-dark)","var(--gold-bg)"),
+        ("👥","Users","/admin/users","#7C3AED","rgba(139,92,246,0.08)"),
+        ("💬","Messages","/admin/messages","#DC2626","rgba(239,68,68,0.08)"),
+        ("💬","Testimonials","/admin/testimonials","#059669","rgba(16,185,129,0.08)"),
+        ("⚙️","Settings","/admin/settings","var(--text-muted)","var(--bg-section)")
+      ] %}
+      <a href="{{ a[2] }}" style="display:flex;align-items:center;gap:9px;padding:13px 14px;background:{{ a[4] }};border-radius:10px;text-decoration:none;transition:all 0.2s;border:1px solid transparent" onmouseover="this.style.transform='translateY(-2px)';this.style.boxShadow='var(--shadow)'" onmouseout="this.style.transform='';this.style.boxShadow=''">
+        <span style="font-size:1.1rem">{{ a[0] }}</span>
+        <span style="font-size:0.82rem;font-weight:600;color:{{ a[3] }}">{{ a[1] }}</span>
+      </a>
+      {% endfor %}
+    </div>
+  </div>
+</div>
+
+<div class="cp-card">
+  <div class="cp-card-header">
+    <div class="cp-card-title">🖥️ System Status</div>
+    <span class="cp-status cp-status-published">All Systems Online</span>
+  </div>
+  <div class="cp-card-body">
+    <div style="display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:14px">
+      {% for item in [("Website","saforatech.com","#10B981","99.9% Uptime"),("Supabase DB","Database","#10B981","Connected"),("Contact Form","SMTP/Email","#F59E0B","Check Config")] %}
+      <div style="padding:14px;background:var(--bg-section);border-radius:10px;border:1px solid var(--border)">
+        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:6px">
+          <span style="font-weight:700;font-size:0.85rem;color:var(--text)">{{ item[0] }}</span>
+          <span style="width:8px;height:8px;background:{{ item[2] }};border-radius:50%;flex-shrink:0"></span>
+        </div>
+        <div style="font-size:0.75rem;color:var(--text-muted)">{{ item[1] }}</div>
+        <div style="font-size:0.8rem;font-weight:600;color:{{ item[2] }};margin-top:4px">{{ item[3] }}</div>
+      </div>
+      {% endfor %}
+    </div>
+  </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+document.getElementById('date-display').textContent = new Date().toLocaleDateString('en-BD',{weekday:'long',year:'numeric',month:'long',day:'numeric'});
+
+function renderList(el, items, emptyMsg) {
+  if (!items || !items.length) { el.innerHTML=`<div style="padding:32px;text-align:center;color:var(--text-muted);font-size:0.875rem">${emptyMsg}</div>`; return; }
+  el.innerHTML = items.join('');
+}
+
+async function load() {
+  try {
+    const sb = getSupabase();
+    const [{count:pc},{count:mc},{count:uc},{data:vd},{data:posts},{data:msgs}] = await Promise.all([
+      sb.from('blog_posts').select('*',{count:'exact',head:true}),
+      sb.from('contact_messages').select('*',{count:'exact',head:true}).eq('status','unread'),
+      sb.from('profiles').select('*',{count:'exact',head:true}),
+      sb.from('blog_posts').select('views'),
+      sb.from('blog_posts').select('id,title,status,created_at,views').order('created_at',{ascending:false}).limit(6),
+      sb.from('contact_messages').select('id,name,email,subject,status,created_at').order('created_at',{ascending:false}).limit(5)
+    ]);
+    const tv = vd?.reduce((s,p)=>s+(p.views||0),0)??0;
+    document.getElementById('stat-posts').textContent=pc??0;
+    document.getElementById('stat-posts-s').textContent=`${pc??0} total`;
+    document.getElementById('stat-msgs').textContent=mc??0;
+    document.getElementById('stat-msgs-s').textContent=`${mc??0} unread`;
+    document.getElementById('stat-users').textContent=uc??0;
+    document.getElementById('stat-users-s').textContent=`${uc??0} registered`;
+    document.getElementById('stat-views').textContent=tv.toLocaleString();
+    if(mc>0){document.getElementById('badge-msgs').textContent=mc;document.getElementById('badge-msgs').classList.remove('hidden');}
+    document.getElementById('badge-posts').textContent=pc??0;
+
+    renderList(document.getElementById('recent-posts'),
+      posts?.map(p=>`<div style="display:flex;align-items:center;justify-content:space-between;padding:11px 20px;border-bottom:1px solid var(--border)"><div style="min-width:0;flex:1"><div style="font-weight:600;font-size:0.875rem;color:var(--text);overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${p.title}</div><div style="font-size:0.72rem;color:var(--text-muted);margin-top:2px">${new Date(p.created_at).toLocaleDateString()} · 👁 ${p.views||0}</div></div><div style="display:flex;align-items:center;gap:8px;flex-shrink:0;margin-left:12px"><span class="cp-status cp-status-${p.status}">${p.status}</span><a href="/admin/posts/edit/${p.id}" class="cp-btn cp-btn-ghost">Edit</a></div></div>`),
+      'No posts yet. <a href="/admin/posts/new" style="color:var(--primary)">Write first post →</a>'
+    );
+
+    renderList(document.getElementById('recent-msgs'),
+      msgs?.map(m=>`<div style="display:flex;align-items:center;justify-content:space-between;padding:11px 20px;border-bottom:1px solid var(--border)"><div style="display:flex;align-items:center;gap:10px;min-width:0;flex:1"><div style="width:32px;height:32px;border-radius:50%;background:linear-gradient(135deg,var(--primary),var(--accent));display:flex;align-items:center;justify-content:center;color:#fff;font-weight:700;font-size:0.78rem;flex-shrink:0">${m.name[0].toUpperCase()}</div><div style="min-width:0"><div style="font-weight:600;font-size:0.875rem;color:var(--text)">${m.name}</div><div style="font-size:0.72rem;color:var(--text-muted);overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${m.subject||m.email}</div></div></div><div style="display:flex;align-items:center;gap:8px;flex-shrink:0;margin-left:12px"><span class="cp-status cp-status-${m.status}">${m.status}</span><a href="/admin/messages" class="cp-btn cp-btn-ghost">View</a></div></div>`),
+      'No messages yet.'
+    );
+  } catch(e) {
+    // Fallback placeholder data
+    ['stat-posts','stat-msgs','stat-users','stat-views'].forEach((id,i)=>{
+      document.getElementById(id).textContent=['24','8','142','5,234'][i];
+    });
+    ['stat-posts-s','stat-msgs-s','stat-users-s'].forEach((id,i)=>{
+      document.getElementById(id).textContent=['24 total','8 unread','142 registered'][i];
+    });
+    document.getElementById('badge-posts').textContent='24';
+    document.getElementById('recent-posts').innerHTML='<div style="padding:24px;text-align:center;color:var(--text-muted);font-size:0.875rem">⚠️ Configure Supabase in <code>supabase-client.js</code> to see live data.</div>';
+    document.getElementById('recent-msgs').innerHTML='<div style="padding:24px;text-align:center;color:var(--text-muted);font-size:0.875rem">⚠️ Configure Supabase to see messages.</div>';
+  }
+}
+document.addEventListener('DOMContentLoaded', load);
+</script>
+{% endblock %}

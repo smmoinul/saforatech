@@ -1,0 +1,255 @@
+{% extends "base.html" %}
+{% block title %}Tech Blog — SaforaTech{% endblock %}
+{% block content %}
+
+<div style="padding-top: var(--nav-h)"></div>
+
+<div style="background:var(--bg-section);padding:64px 0 48px;text-align:center">
+  <div class="container">
+    <div class="section-tag">Tech Blog</div>
+    <h1 class="section-title" style="margin-top:12px">SaforaTech <span class="gradient-text">Tech Blog</span></h1>
+    <p class="section-desc">নেটওয়ার্কিং, সার্ভার, সিকিউরিটি, ক্লাউড — সব বিষয়ে বাংলা ও ইংরেজি টিউটোরিয়াল।</p>
+    <!-- Write post button — shown to logged-in users with author/admin role -->
+    <div id="write-post-btn-wrapper" class="hidden" style="margin-top:20px">
+      <a href="/blog/new" class="btn btn-primary">✏️ Write a Post</a>
+    </div>
+  </div>
+</div>
+
+<section>
+  <div class="container">
+    <div style="display:grid;grid-template-columns:1fr 280px;gap:40px;align-items:start">
+
+      <!-- Posts Column -->
+      <div>
+        <!-- Category Filter -->
+        <div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:32px" id="category-filters">
+          <button class="category-btn active" data-cat="all" onclick="filterPosts('all', this)">All Posts</button>
+          <button class="category-btn" data-cat="networking" onclick="filterPosts('networking', this)">Networking</button>
+          <button class="category-btn" data-cat="server" onclick="filterPosts('server', this)">Server</button>
+          <button class="category-btn" data-cat="security" onclick="filterPosts('security', this)">Security</button>
+          <button class="category-btn" data-cat="cloud" onclick="filterPosts('cloud', this)">Cloud & Web</button>
+          <button class="category-btn" data-cat="safora-erp" onclick="filterPosts('safora-erp', this)">SaforaERP</button>
+          <button class="category-btn" data-cat="software" onclick="filterPosts('software', this)">Software</button>
+        </div>
+
+        <!-- Posts Grid — loaded from Supabase -->
+        <div id="posts-grid" style="display:grid;gap:24px">
+          <!-- Loading skeleton -->
+          {% for i in range(4) %}
+          <div class="post-skeleton blog-post-card" style="background:var(--bg-card);border:1px solid var(--border);border-radius:var(--radius);padding:24px;animation:shimmer 1.5s infinite">
+            <div style="height:14px;background:var(--bg-section);border-radius:4px;width:30%;margin-bottom:12px"></div>
+            <div style="height:20px;background:var(--bg-section);border-radius:4px;width:80%;margin-bottom:10px"></div>
+            <div style="height:14px;background:var(--bg-section);border-radius:4px;width:95%;margin-bottom:6px"></div>
+            <div style="height:14px;background:var(--bg-section);border-radius:4px;width:70%;margin-bottom:16px"></div>
+            <div style="display:flex;gap:12px">
+              <div style="height:10px;background:var(--bg-section);border-radius:4px;width:80px"></div>
+              <div style="height:10px;background:var(--bg-section);border-radius:4px;width:60px"></div>
+            </div>
+          </div>
+          {% endfor %}
+        </div>
+
+        <!-- Load more -->
+        <div style="text-align:center;margin-top:32px" id="load-more-wrapper">
+          <button class="btn btn-ghost" onclick="loadMorePosts()" id="load-more-btn">Load More Posts</button>
+        </div>
+      </div>
+
+      <!-- Sidebar -->
+      <aside>
+        <!-- Search -->
+        <div class="card" style="margin-bottom:20px">
+          <div style="font-weight:700;font-size:0.9rem;margin-bottom:12px;color:var(--text)">🔍 Search</div>
+          <div style="position:relative">
+            <input type="text" class="form-control" placeholder="Search posts..." id="search-input" oninput="searchPosts(this.value)" style="padding-right:40px" />
+            <span style="position:absolute;right:12px;top:50%;transform:translateY(-50%);color:var(--text-muted)">🔍</span>
+          </div>
+        </div>
+
+        <!-- Categories -->
+        <div class="card" style="margin-bottom:20px">
+          <div style="font-weight:700;font-size:0.9rem;margin-bottom:14px;color:var(--text)">📂 Categories</div>
+          <div id="sidebar-categories" style="display:flex;flex-direction:column;gap:8px">
+            {% for cat in [("Networking","networking","#0057FF"),("Server & Storage","server","#10B981"),("Security","security","#EF4444"),("Cloud & Web","cloud","#8B5CF6"),("SaforaERP","safora-erp","#00C6FF"),("Software","software","#FF6B35"),("IT Consultancy","consulting","#F59E0B")] %}
+            <a href="#" onclick="filterPosts('{{ cat[1] }}', null)" style="display:flex;align-items:center;justify-content:space-between;text-decoration:none;padding:6px 0;border-bottom:1px solid var(--border);transition:all 0.2s">
+              <div style="display:flex;align-items:center;gap:8px">
+                <span style="width:8px;height:8px;background:{{ cat[2] }};border-radius:50%;flex-shrink:0"></span>
+                <span style="font-size:0.875rem;color:var(--text-muted)">{{ cat[0] }}</span>
+              </div>
+            </a>
+            {% endfor %}
+          </div>
+        </div>
+
+        <!-- Write for Us -->
+        <div class="card" style="background:linear-gradient(135deg,var(--primary),#0040CC);border-color:transparent;color:#fff">
+          <div style="font-size:1.5rem;margin-bottom:10px">✍️</div>
+          <div style="font-weight:700;margin-bottom:6px">Write for SaforaTech</div>
+          <p style="font-size:0.82rem;opacity:0.85;line-height:1.7;margin-bottom:14px">Share your IT knowledge with the community. Create an account and start writing.</p>
+          <button onclick="openAuthModal('register')" style="width:100%;padding:10px;background:rgba(255,255,255,0.2);border:2px solid rgba(255,255,255,0.4);border-radius:8px;color:#fff;font-weight:700;cursor:pointer;font-size:0.85rem;transition:all 0.2s" onmouseover="this.style.background='rgba(255,255,255,0.3)'" onmouseout="this.style.background='rgba(255,255,255,0.2)'">
+            Create Account →
+          </button>
+        </div>
+      </aside>
+
+    </div>
+  </div>
+</section>
+
+{% endblock %}
+
+{% block scripts %}
+<style>
+.category-btn {
+  padding: 6px 16px;
+  border: 1.5px solid var(--border);
+  border-radius: 100px;
+  background: var(--bg-card);
+  color: var(--text-muted);
+  font-size: 0.82rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+.category-btn.active, .category-btn:hover {
+  background: var(--primary);
+  color: #fff;
+  border-color: var(--primary);
+}
+@keyframes shimmer {
+  0%,100% { opacity: 1; }
+  50% { opacity: 0.5; }
+}
+.blog-post-card {
+  transition: all 0.25s;
+}
+.blog-post-card:not(.post-skeleton):hover {
+  border-color: var(--primary);
+  box-shadow: var(--shadow-hover);
+  transform: translateY(-2px);
+}
+</style>
+
+<script>
+let currentOffset = 0;
+const PAGE_SIZE = 6;
+let currentCategory = 'all';
+
+// Sample posts (shown when Supabase not configured)
+const SAMPLE_POSTS = [
+  { id:1, title:"MikroTik RouterOS সম্পূর্ণ সেটআপ গাইড", title_en:"Complete MikroTik RouterOS Setup Guide", excerpt:"শূন্য থেকে MikroTik রাউটার সেটআপ শিখুন — DHCP, Firewall, Bandwidth Control সহ।", category:"Networking", cat_color:"#0057FF", author:"S M Moinul Islam", date:"Apr 3, 2025", views:1240, slug:"mikrotik-setup-guide" },
+  { id:2, title:"Proxmox VE দিয়ে Virtualization Server", title_en:"Virtualization Server with Proxmox VE", excerpt:"Free এবং পাওয়ারফুল Proxmox দিয়ে কীভাবে একটি প্রফেশনাল virtualization সার্ভার তৈরি করবেন।", category:"Server", cat_color:"#10B981", author:"SaforaTech Team", date:"Mar 28, 2025", views:980, slug:"proxmox-virtualization" },
+  { id:3, title:"Hikvision CCTV Remote Access Setup", title_en:"Hikvision CCTV Remote Access Setup", excerpt:"Hikvision NVR-এ remote access কনফিগার করুন — DDNS, Port Forwarding এবং iVMS-4200 সেটআপ।", category:"Security", cat_color:"#EF4444", author:"SaforaTech Team", date:"Mar 20, 2025", views:750, slug:"hikvision-remote-access" },
+  { id:4, title:"AWS Free Tier দিয়ে Website Host করুন", title_en:"Host Your Website on AWS Free Tier", excerpt:"Amazon EC2 ও S3 ব্যবহার করে বিনামূল্যে প্রফেশনাল ওয়েবসাইট হোস্ট করার সম্পূর্ণ গাইড।", category:"Cloud & Web", cat_color:"#8B5CF6", author:"S M Moinul Islam", date:"Mar 15, 2025", views:1560, slug:"aws-free-tier-hosting" },
+  { id:5, title:"SaforaERP দিয়ে ব্যবসা ম্যানেজমেন্ট", title_en:"Business Management with SaforaERP", excerpt:"SaforaERP-এর সব ফিচার কীভাবে ব্যবহার করবেন — Inventory থেকে HR সব কিছুর টিউটোরিয়াল।", category:"SaforaERP", cat_color:"#00C6FF", author:"SaforaTech Team", date:"Mar 10, 2025", views:620, slug:"safora-erp-guide" },
+  { id:6, title:"Linux Server Security Hardening", title_en:"Linux Server Security Hardening", excerpt:"Ubuntu/CentOS সার্ভারকে হ্যাকার থেকে রক্ষা করুন। Firewall, SSH, Fail2ban সব কনফিগারেশন।", category:"Security", cat_color:"#EF4444", author:"S M Moinul Islam", date:"Mar 5, 2025", views:890, slug:"linux-security-hardening" }
+];
+
+function renderPosts(posts) {
+  const grid = document.getElementById('posts-grid');
+  if (!posts || posts.length === 0) {
+    grid.innerHTML = '<div style="text-align:center;padding:40px;color:var(--text-muted)">No posts found.</div>';
+    return;
+  }
+  const html = posts.map(p => `
+    <div class="blog-post-card card" style="padding:24px;cursor:pointer" onclick="window.location='/blog/${p.slug}'">
+      <div style="display:flex;align-items:center;gap:10px;margin-bottom:12px">
+        <span style="padding:3px 10px;background:${p.cat_color}1A;color:${p.cat_color};border-radius:100px;font-size:0.72rem;font-weight:700">${p.category}</span>
+        <span style="font-size:0.78rem;color:var(--text-muted)">${p.date}</span>
+      </div>
+      <h3 style="font-family:var(--font-display);font-weight:700;font-size:1.05rem;color:var(--text);margin-bottom:8px;line-height:1.4">${p.title}</h3>
+      <p style="font-size:0.875rem;color:var(--text-muted);line-height:1.7;margin-bottom:16px">${p.excerpt}</p>
+      <div style="display:flex;align-items:center;justify-content:space-between">
+        <div style="display:flex;align-items:center;gap:8px">
+          <div style="width:28px;height:28px;background:linear-gradient(135deg,var(--primary),var(--accent));border-radius:50%;display:flex;align-items:center;justify-content:center;color:#fff;font-size:0.75rem;font-weight:700">${p.author[0]}</div>
+          <span style="font-size:0.8rem;font-weight:600;color:var(--text)">${p.author}</span>
+        </div>
+        <span style="font-size:0.78rem;color:var(--text-muted)">👁 ${p.views?.toLocaleString() || 0}</span>
+      </div>
+    </div>
+  `).join('');
+  grid.innerHTML = html;
+}
+
+async function loadPosts(category = 'all') {
+  const grid = document.getElementById('posts-grid');
+  try {
+    const sb = getSupabase();
+    // Try Supabase first
+    let query = sb.from('blog_posts')
+      .select('*, profiles(full_name), blog_categories(name, slug, color)')
+      .eq('status', 'published')
+      .order('published_at', { ascending: false })
+      .limit(PAGE_SIZE);
+
+    if (category !== 'all') {
+      query = query.eq('blog_categories.slug', category);
+    }
+
+    const { data, error } = await query;
+
+    if (!error && data && data.length > 0) {
+      const mapped = data.map(p => ({
+        id: p.id,
+        title: p.title,
+        excerpt: p.excerpt || '',
+        category: p.blog_categories?.name || 'General',
+        cat_color: p.blog_categories?.color || '#0057FF',
+        author: p.profiles?.full_name || 'SaforaTech Team',
+        date: new Date(p.published_at).toLocaleDateString('en-BD'),
+        views: p.views || 0,
+        slug: p.slug
+      }));
+      renderPosts(mapped);
+      return;
+    }
+  } catch(e) {
+    // Supabase not configured, use sample data
+  }
+
+  // Fallback to sample posts
+  const filtered = category === 'all'
+    ? SAMPLE_POSTS
+    : SAMPLE_POSTS.filter(p => p.category.toLowerCase().replace(/[^a-z]/g, '-') === category || p.category.toLowerCase().includes(category));
+  renderPosts(filtered);
+}
+
+function filterPosts(category, btnEl) {
+  currentCategory = category;
+  document.querySelectorAll('.category-btn').forEach(b => b.classList.remove('active'));
+  if (btnEl) btnEl.classList.add('active');
+  loadPosts(category);
+}
+
+let searchTimeout;
+function searchPosts(query) {
+  clearTimeout(searchTimeout);
+  searchTimeout = setTimeout(() => {
+    if (!query.trim()) { loadPosts(currentCategory); return; }
+    const q = query.toLowerCase();
+    const filtered = SAMPLE_POSTS.filter(p =>
+      p.title.toLowerCase().includes(q) ||
+      p.excerpt.toLowerCase().includes(q) ||
+      p.category.toLowerCase().includes(q)
+    );
+    renderPosts(filtered);
+  }, 300);
+}
+
+// Show write post button for logged-in users
+async function checkWriteAccess() {
+  try {
+    const profile = await getCurrentProfile();
+    if (profile && ['admin', 'author'].includes(profile.role)) {
+      document.getElementById('write-post-btn-wrapper')?.classList.remove('hidden');
+    }
+  } catch(e) {}
+}
+
+document.addEventListener('DOMContentLoaded', () => {
+  loadPosts();
+  checkWriteAccess();
+});
+</script>
+{% endblock %}

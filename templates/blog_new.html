@@ -1,0 +1,167 @@
+{% extends "base.html" %}
+{% block title %}Write Post — SaforaTech Blog{% endblock %}
+{% block content %}
+<div style="padding-top: var(--nav-h)"></div>
+
+<div style="background:var(--bg-section);padding:40px 0 28px">
+  <div class="container">
+    <div style="display:flex;align-items:center;justify-content:space-between">
+      <div>
+        <div class="section-tag" style="margin-bottom:8px">Blog Editor</div>
+        <h1 style="font-family:var(--font-display);font-size:1.8rem;font-weight:800;color:var(--text)">Write a New Post</h1>
+      </div>
+      <div style="display:flex;gap:10px">
+        <button class="btn btn-ghost" onclick="savePost('draft')">💾 Save Draft</button>
+        <button class="btn btn-primary" onclick="savePost('published')">🚀 Publish</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<section>
+  <div class="container">
+    <div style="display:grid;grid-template-columns:1fr 300px;gap:32px;align-items:start">
+
+      <!-- Editor -->
+      <div>
+        <div class="form-group">
+          <label class="form-label">Title (English)</label>
+          <input type="text" id="post-title" class="form-control" placeholder="Write a clear, compelling title..." style="font-size:1.1rem;font-weight:600" />
+        </div>
+        <div class="form-group">
+          <label class="form-label">Title (বাংলা — Optional)</label>
+          <input type="text" id="post-title-bn" class="form-control" placeholder="বাংলায় শিরোনাম (ঐচ্ছিক)" style="font-family:var(--font-bengali)" />
+        </div>
+        <div class="form-group">
+          <label class="form-label">Excerpt / Summary</label>
+          <textarea id="post-excerpt" class="form-control" rows="3" placeholder="A short description (shown in blog list)..."></textarea>
+        </div>
+        <div class="form-group">
+          <label class="form-label" style="display:flex;align-items:center;justify-content:space-between">
+            <span>Content (Markdown supported)</span>
+            <div style="display:flex;gap:6px">
+              <button type="button" onclick="insertMd('**','**')" class="btn-icon" title="Bold" style="font-weight:700;font-size:0.85rem">B</button>
+              <button type="button" onclick="insertMd('*','*')" class="btn-icon" title="Italic" style="font-style:italic;font-size:0.85rem">I</button>
+              <button type="button" onclick="insertMd('## ','')" class="btn-icon" title="Heading" style="font-size:0.75rem">H2</button>
+              <button type="button" onclick="insertMd('```\n','\n```')" class="btn-icon" title="Code" style="font-size:0.8rem">⌨️</button>
+            </div>
+          </label>
+          <textarea id="post-content" class="form-control" rows="18" placeholder="Write your post content here. Markdown is supported.&#10;&#10;## Heading&#10;&#10;**Bold**, *italic*, `code`&#10;&#10;```bash&#10;# code block&#10;```"></textarea>
+        </div>
+      </div>
+
+      <!-- Sidebar Settings -->
+      <div style="display:flex;flex-direction:column;gap:16px;position:sticky;top:calc(var(--nav-h) + 24px)">
+        <div class="card" style="padding:20px">
+          <div style="font-weight:700;font-size:0.9rem;margin-bottom:14px;color:var(--text)">Post Settings</div>
+          <div class="form-group">
+            <label class="form-label">Category</label>
+            <select id="post-category" class="form-control">
+              <option value="">Select category</option>
+              <option value="1">Networking</option>
+              <option value="2">Server & Storage</option>
+              <option value="3">Security</option>
+              <option value="4">Cloud & Web</option>
+              <option value="5">IT Consultancy</option>
+              <option value="6">Software</option>
+              <option value="7">SaforaERP</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label class="form-label">Tags (comma separated)</label>
+            <input type="text" id="post-tags" class="form-control" placeholder="mikrotik, networking, tutorial" />
+          </div>
+          <div class="form-group">
+            <label class="form-label">Slug (URL)</label>
+            <input type="text" id="post-slug" class="form-control" placeholder="auto-generated" />
+          </div>
+        </div>
+
+        <div id="save-status" class="auth-success hidden" style="font-size:0.85rem"></div>
+        <div id="save-error" class="auth-error hidden" style="font-size:0.85rem"></div>
+
+        <button class="btn btn-primary" style="width:100%;justify-content:center" onclick="savePost('published')">🚀 Publish Post</button>
+        <button class="btn btn-ghost" style="width:100%;justify-content:center" onclick="savePost('draft')">💾 Save as Draft</button>
+        <a href="/blog" class="btn btn-ghost" style="width:100%;justify-content:center;text-decoration:none">← Back to Blog</a>
+      </div>
+
+    </div>
+  </div>
+</section>
+{% endblock %}
+
+{% block scripts %}
+<script>
+// Auth check — must be logged in to write
+document.addEventListener('DOMContentLoaded', async () => {
+  try {
+    const user = await getCurrentUser();
+    if (!user) {
+      alert('Please log in to write a post.');
+      window.location.href = '/blog';
+    }
+  } catch(e) {
+    console.warn('Auth check skipped (Supabase not configured)');
+  }
+
+  // Auto-generate slug from title
+  document.getElementById('post-title').addEventListener('input', function() {
+    const slug = this.value.toLowerCase()
+      .replace(/[^a-z0-9\s-]/g, '')
+      .replace(/\s+/g, '-')
+      .replace(/-+/g, '-')
+      .trim();
+    document.getElementById('post-slug').value = slug;
+  });
+});
+
+function insertMd(before, after) {
+  const ta = document.getElementById('post-content');
+  const start = ta.selectionStart, end = ta.selectionEnd;
+  const sel = ta.value.substring(start, end);
+  ta.value = ta.value.substring(0, start) + before + sel + after + ta.value.substring(end);
+  ta.focus();
+  ta.selectionStart = start + before.length;
+  ta.selectionEnd   = end   + before.length;
+}
+
+async function savePost(status) {
+  const title   = document.getElementById('post-title').value.trim();
+  const content = document.getElementById('post-content').value.trim();
+  if (!title) { alert('Please add a title.'); return; }
+  if (!content) { alert('Please add content.'); return; }
+
+  const slug = document.getElementById('post-slug').value ||
+    title.toLowerCase().replace(/[^a-z0-9\s]/g,'').replace(/\s+/g,'-');
+
+  const postData = {
+    title,
+    title_bn:   document.getElementById('post-title-bn').value || null,
+    slug,
+    excerpt:    document.getElementById('post-excerpt').value  || null,
+    content,
+    category_id: parseInt(document.getElementById('post-category').value) || null,
+    tags: document.getElementById('post-tags').value.split(',').map(t => t.trim()).filter(Boolean),
+    status,
+    published_at: status === 'published' ? new Date().toISOString() : null
+  };
+
+  const errEl = document.getElementById('save-error');
+  const okEl  = document.getElementById('save-status');
+  errEl.classList.add('hidden'); okEl.classList.add('hidden');
+
+  try {
+    const { data, error } = await createPost(postData);
+    if (error) throw error;
+    okEl.textContent = status === 'published' ? '✅ Post published!' : '✅ Draft saved!';
+    okEl.classList.remove('hidden');
+    if (status === 'published') {
+      setTimeout(() => { window.location.href = `/blog/${slug}`; }, 1500);
+    }
+  } catch(e) {
+    errEl.textContent = '❌ ' + (e.message || 'Failed to save post.');
+    errEl.classList.remove('hidden');
+  }
+}
+</script>
+{% endblock %}

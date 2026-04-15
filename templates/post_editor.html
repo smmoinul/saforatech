@@ -1,0 +1,317 @@
+{% extends "admin/base_admin.html" %}
+{% block title %}{% if post_id %}Edit Post{% else %}New Post{% endif %} — CPanel{% endblock %}
+{% block breadcrumb %}<a href="/admin/" style="color:var(--text-muted);text-decoration:none">Dashboard</a> › <a href="/admin/posts" style="color:var(--text-muted);text-decoration:none">Posts</a> › <strong>{% if post_id %}Edit Post{% else %}New Post{% endif %}</strong>{% endblock %}
+{% set active = 'new-post' %}
+
+{% block content %}
+<div class="cp-page-header">
+  <h1 class="cp-page-title">{% if post_id %}✏️ Edit Post{% else %}✏️ New Blog Post{% endif %}</h1>
+  <div style="display:flex;gap:10px">
+    <button onclick="savePost('draft')" class="btn btn-ghost btn-sm">💾 Save Draft</button>
+    <button onclick="savePost('published')" class="btn btn-primary btn-sm">🚀 Publish</button>
+  </div>
+</div>
+
+<div id="save-alert" class="cp-alert cp-alert-success" style="display:none"></div>
+<div id="error-alert" class="cp-alert cp-alert-error" style="display:none"></div>
+
+<div style="display:grid;grid-template-columns:1fr 300px;gap:20px;align-items:start">
+
+  <!-- Main editor -->
+  <div>
+    <!-- Title -->
+    <div class="cp-card" style="margin-bottom:16px">
+      <div class="cp-card-body" style="padding:16px">
+        <input type="text" id="post-title" class="cp-input" placeholder="Post title — make it clear and compelling..." style="font-size:1.1rem;font-weight:600;border:none;padding:4px 0;box-shadow:none;background:transparent;border-radius:0;border-bottom:2px solid var(--border)" oninput="autoSlug(this.value)"/>
+      </div>
+    </div>
+
+    <!-- Bengali title -->
+    <div class="cp-card" style="margin-bottom:16px">
+      <div class="cp-card-body" style="padding:16px">
+        <label class="cp-label">বাংলা শিরোনাম (Optional)</label>
+        <input type="text" id="post-title-bn" class="cp-input" placeholder="বাংলায় পোস্টের শিরোনাম..." style="font-family:var(--font-bengali)"/>
+      </div>
+    </div>
+
+    <!-- Rich Text Editor -->
+    <div class="cp-card" style="margin-bottom:16px">
+      <div class="cp-card-header">
+        <div class="cp-card-title">Content</div>
+        <div style="display:flex;gap:6px">
+          <button class="cp-btn cp-btn-ghost" onclick="togglePreview()" id="preview-toggle-btn">👁 Preview</button>
+        </div>
+      </div>
+      <div class="cp-editor" id="editor-wrap">
+        <!-- Toolbar -->
+        <div class="cp-editor-toolbar">
+          <button class="cp-editor-btn" onclick="fmt('bold')" title="Bold"><b>B</b></button>
+          <button class="cp-editor-btn" onclick="fmt('italic')" title="Italic"><i>I</i></button>
+          <button class="cp-editor-btn" onclick="fmt('underline')" title="Underline"><u>U</u></button>
+          <div class="cp-editor-sep"></div>
+          <button class="cp-editor-btn" onclick="fmtBlock('h2')" title="Heading 2">H2</button>
+          <button class="cp-editor-btn" onclick="fmtBlock('h3')" title="Heading 3">H3</button>
+          <div class="cp-editor-sep"></div>
+          <button class="cp-editor-btn" onclick="fmt('insertUnorderedList')" title="Bullet List">• List</button>
+          <button class="cp-editor-btn" onclick="fmt('insertOrderedList')" title="Numbered List">1. List</button>
+          <div class="cp-editor-sep"></div>
+          <button class="cp-editor-btn" onclick="insertCode()" title="Code block">&lt;/&gt; Code</button>
+          <button class="cp-editor-btn" onclick="insertLink()" title="Insert link">🔗 Link</button>
+          <div class="cp-editor-sep"></div>
+          <button class="cp-editor-btn" onclick="fmt('undo')">↩</button>
+          <button class="cp-editor-btn" onclick="fmt('redo')">↪</button>
+        </div>
+        <!-- Editable area -->
+        <div class="cp-editor-content" id="editor" contenteditable="true"
+             data-placeholder="Write your post content here. Use the toolbar to format text..."></div>
+      </div>
+
+      <!-- Preview -->
+      <div id="preview-area" style="display:none;padding:20px;border-top:1px solid var(--border);min-height:200px;color:var(--text);line-height:1.9;font-size:0.95rem"></div>
+    </div>
+
+    <!-- Excerpt -->
+    <div class="cp-card">
+      <div class="cp-card-header"><div class="cp-card-title">📝 Excerpt / Summary</div></div>
+      <div class="cp-card-body">
+        <textarea id="post-excerpt" class="cp-textarea" rows="3" placeholder="A short summary shown in the blog list (max 200 characters)..." maxlength="200"></textarea>
+        <div style="font-size:0.75rem;color:var(--text-muted);margin-top:4px"><span id="excerpt-count">0</span>/200</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Sidebar settings -->
+  <div style="display:flex;flex-direction:column;gap:16px;position:sticky;top:72px">
+
+    <!-- Publish box -->
+    <div class="cp-card">
+      <div class="cp-card-header"><div class="cp-card-title">📤 Publish</div></div>
+      <div class="cp-card-body" style="display:flex;flex-direction:column;gap:10px">
+        <div>
+          <label class="cp-label">Status</label>
+          <select id="post-status" class="cp-select">
+            <option value="draft">Draft</option>
+            <option value="published">Published</option>
+            <option value="archived">Archived</option>
+          </select>
+        </div>
+        <button onclick="savePost(document.getElementById('post-status').value)" class="btn btn-primary" style="width:100%;justify-content:center">
+          🚀 Save &amp; Publish
+        </button>
+        <button onclick="savePost('draft')" class="btn btn-ghost" style="width:100%;justify-content:center">
+          💾 Save as Draft
+        </button>
+        {% if post_id %}
+        <button onclick="deleteThisPost()" class="cp-btn cp-btn-danger" style="width:100%;justify-content:center">
+          🗑 Delete Post
+        </button>
+        {% endif %}
+      </div>
+    </div>
+
+    <!-- Category -->
+    <div class="cp-card">
+      <div class="cp-card-header"><div class="cp-card-title">📂 Category</div></div>
+      <div class="cp-card-body">
+        <select id="post-category" class="cp-select">
+          <option value="">Select category...</option>
+          <option value="1">Networking</option>
+          <option value="2">Server & Storage</option>
+          <option value="3">Security</option>
+          <option value="4">Cloud & Web</option>
+          <option value="5">IT Consultancy</option>
+          <option value="6">Software</option>
+          <option value="7">SaforaERP</option>
+        </select>
+      </div>
+    </div>
+
+    <!-- Tags -->
+    <div class="cp-card">
+      <div class="cp-card-header"><div class="cp-card-title">🏷️ Tags</div></div>
+      <div class="cp-card-body">
+        <input type="text" id="post-tags" class="cp-input" placeholder="mikrotik, networking, tutorial"/>
+        <div style="font-size:0.75rem;color:var(--text-muted);margin-top:6px">Separate with commas</div>
+      </div>
+    </div>
+
+    <!-- SEO / Slug -->
+    <div class="cp-card">
+      <div class="cp-card-header"><div class="cp-card-title">🔗 URL Slug</div></div>
+      <div class="cp-card-body">
+        <div style="font-size:0.75rem;color:var(--text-muted);margin-bottom:6px">saforatech.com/blog/</div>
+        <input type="text" id="post-slug" class="cp-input" placeholder="auto-generated-from-title"/>
+      </div>
+    </div>
+
+    <!-- Cover image -->
+    <div class="cp-card">
+      <div class="cp-card-header"><div class="cp-card-title">🖼️ Cover Image</div></div>
+      <div class="cp-card-body">
+        <input type="url" id="post-cover" class="cp-input" placeholder="https://... image URL"/>
+        <div id="cover-preview" style="margin-top:10px;display:none">
+          <img id="cover-img" style="width:100%;border-radius:8px;object-fit:cover;max-height:140px"/>
+        </div>
+        <div style="font-size:0.75rem;color:var(--text-muted);margin-top:6px">Paste an image URL</div>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<input type="hidden" id="post-id" value="{{ post_id or '' }}"/>
+{% endblock %}
+
+{% block scripts %}
+<script>
+const POST_ID = document.getElementById('post-id').value;
+
+// ── Formatting ────────────────────────────────────────────────
+function fmt(cmd) { document.getElementById('editor').focus(); document.execCommand(cmd,false,null); }
+
+function fmtBlock(tag) {
+  const editor = document.getElementById('editor');
+  editor.focus();
+  const sel = window.getSelection();
+  if (!sel.rangeCount) return;
+  const range = sel.getRangeAt(0);
+  const el = document.createElement(tag);
+  el.appendChild(range.extractContents());
+  range.insertNode(el);
+}
+
+function insertCode() {
+  const code = prompt('Enter code:');
+  if (!code) return;
+  const pre = `<pre style="background:var(--bg-section);padding:14px;border-radius:8px;overflow-x:auto;font-family:monospace;font-size:0.875rem;margin:12px 0"><code>${code.replace(/</g,'&lt;')}</code></pre>`;
+  document.getElementById('editor').focus();
+  document.execCommand('insertHTML',false,pre);
+}
+
+function insertLink() {
+  const url = prompt('URL:');
+  const text = prompt('Link text:');
+  if (url) document.execCommand('insertHTML',false,`<a href="${url}" style="color:var(--primary)">${text||url}</a>`);
+}
+
+// ── Slug auto-gen ─────────────────────────────────────────────
+function autoSlug(title) {
+  document.getElementById('post-slug').value = title.toLowerCase()
+    .replace(/[^a-z0-9\s-]/g,'').replace(/\s+/g,'-').replace(/-+/g,'-').trim();
+}
+
+// ── Excerpt counter ───────────────────────────────────────────
+document.getElementById('post-excerpt').addEventListener('input', function() {
+  document.getElementById('excerpt-count').textContent = this.value.length;
+});
+
+// ── Cover image preview ───────────────────────────────────────
+document.getElementById('post-cover').addEventListener('input', function() {
+  const url = this.value.trim();
+  const preview = document.getElementById('cover-preview');
+  const img = document.getElementById('cover-img');
+  if (url) { img.src = url; preview.style.display = 'block'; }
+  else { preview.style.display = 'none'; }
+});
+
+// ── Preview toggle ────────────────────────────────────────────
+let previewOn = false;
+function togglePreview() {
+  previewOn = !previewOn;
+  document.getElementById('editor').style.display = previewOn ? 'none' : '';
+  document.getElementById('preview-area').style.display = previewOn ? '' : 'none';
+  document.getElementById('preview-toggle-btn').textContent = previewOn ? '✏️ Edit' : '👁 Preview';
+  if (previewOn) {
+    document.getElementById('preview-area').innerHTML = document.getElementById('editor').innerHTML;
+  }
+}
+
+// ── Save post ─────────────────────────────────────────────────
+async function savePost(status) {
+  const title = document.getElementById('post-title').value.trim();
+  const content = document.getElementById('editor').innerHTML.trim();
+  if (!title) { showAlert('error','Please add a title.'); return; }
+
+  const slug = document.getElementById('post-slug').value ||
+    title.toLowerCase().replace(/[^a-z0-9\s]/g,'').replace(/\s+/g,'-');
+
+  const postData = {
+    title,
+    title_bn: document.getElementById('post-title-bn').value || null,
+    slug,
+    content,
+    excerpt: document.getElementById('post-excerpt').value || null,
+    category_id: parseInt(document.getElementById('post-category').value) || null,
+    tags: document.getElementById('post-tags').value.split(',').map(t=>t.trim()).filter(Boolean),
+    cover_image: document.getElementById('post-cover').value || null,
+    status,
+    published_at: status === 'published' ? new Date().toISOString() : null
+  };
+
+  try {
+    const sb = getSupabase();
+    const {data:{user}} = await sb.auth.getUser();
+    if (!user) { showAlert('error','Please log in first.'); return; }
+
+    let result;
+    if (POST_ID) {
+      result = await sb.from('blog_posts').update(postData).eq('id', POST_ID);
+    } else {
+      result = await sb.from('blog_posts').insert({...postData, author_id: user.id});
+    }
+
+    if (result.error) throw result.error;
+
+    showAlert('success', `✅ Post ${status === 'published' ? 'published' : 'saved as draft'} successfully!`);
+    if (!POST_ID && status === 'published') {
+      setTimeout(() => { window.location.href = '/admin/posts'; }, 1500);
+    }
+  } catch(e) {
+    showAlert('error', '❌ ' + e.message);
+  }
+}
+
+function showAlert(type, msg) {
+  const el = document.getElementById(type === 'success' ? 'save-alert' : 'error-alert');
+  el.textContent = msg;
+  el.style.display = 'flex';
+  if (type === 'success') setTimeout(() => el.style.display = 'none', 4000);
+}
+
+// ── Load existing post ────────────────────────────────────────
+async function loadPost() {
+  if (!POST_ID) return;
+  try {
+    const sb = getSupabase();
+    const {data, error} = await sb.from('blog_posts').select('*').eq('id', POST_ID).single();
+    if (error || !data) return;
+    document.getElementById('post-title').value = data.title || '';
+    document.getElementById('post-title-bn').value = data.title_bn || '';
+    document.getElementById('post-slug').value = data.slug || '';
+    document.getElementById('editor').innerHTML = data.content || '';
+    document.getElementById('post-excerpt').value = data.excerpt || '';
+    document.getElementById('post-category').value = data.category_id || '';
+    document.getElementById('post-tags').value = (data.tags || []).join(', ');
+    document.getElementById('post-cover').value = data.cover_image || '';
+    document.getElementById('post-status').value = data.status || 'draft';
+    document.getElementById('excerpt-count').textContent = (data.excerpt||'').length;
+    if (data.cover_image) {
+      document.getElementById('cover-img').src = data.cover_image;
+      document.getElementById('cover-preview').style.display = 'block';
+    }
+  } catch(e) { console.warn(e); }
+}
+
+async function deleteThisPost() {
+  if (!confirm('Delete this post permanently?')) return;
+  try {
+    const sb = getSupabase();
+    await sb.from('blog_posts').delete().eq('id', POST_ID);
+    showToast('🗑 Post deleted', 'success');
+    setTimeout(() => { window.location.href = '/admin/posts'; }, 1000);
+  } catch(e) { showAlert('error', e.message); }
+}
+
+document.addEventListener('DOMContentLoaded', loadPost);
+</script>
+{% endblock %}

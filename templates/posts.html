@@ -1,0 +1,188 @@
+{% extends "admin/base_admin.html" %}
+{% block title %}Blog Posts — SaforaTech CPanel{% endblock %}
+{% block breadcrumb %}<a href="/admin/" style="color:var(--text-muted);text-decoration:none">Dashboard</a> › <strong>Blog Posts</strong>{% endblock %}
+{% set active = 'posts' %}
+
+{% block content %}
+<div class="cp-page-header">
+  <div>
+    <h1 class="cp-page-title">📝 Blog Posts</h1>
+    <p class="cp-page-sub">Manage all your blog content</p>
+  </div>
+  <a href="/admin/posts/new" class="btn btn-primary">✏️ New Post</a>
+</div>
+
+<!-- Tabs -->
+<div class="cp-tabs">
+  <button class="cp-tab active" onclick="filterStatus('all',this)">All</button>
+  <button class="cp-tab" onclick="filterStatus('published',this)">Published</button>
+  <button class="cp-tab" onclick="filterStatus('draft',this)">Drafts</button>
+  <button class="cp-tab" onclick="filterStatus('archived',this)">Archived</button>
+</div>
+
+<!-- Filter bar -->
+<div class="cp-filter-bar">
+  <div class="cp-search-wrap">
+    <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+    <input type="text" class="cp-search" placeholder="Search posts..." id="search-input" oninput="searchPosts(this.value)"/>
+  </div>
+  <select class="cp-select" style="width:auto" onchange="filterCategory(this.value)">
+    <option value="">All Categories</option>
+    <option value="networking">Networking</option>
+    <option value="server">Server & Storage</option>
+    <option value="security">Security</option>
+    <option value="cloud">Cloud & Web</option>
+    <option value="safora-erp">SaforaERP</option>
+    <option value="software">Software</option>
+    <option value="consulting">IT Consultancy</option>
+  </select>
+  <button class="cp-btn cp-btn-danger" id="bulk-delete-btn" style="display:none" onclick="bulkDelete()">🗑 Delete Selected</button>
+</div>
+
+<div class="cp-card">
+  <div style="overflow-x:auto">
+    <table class="cp-table">
+      <thead>
+        <tr>
+          <th style="width:36px"><input type="checkbox" id="select-all" onchange="toggleAll(this)"/></th>
+          <th>Title</th>
+          <th>Category</th>
+          <th>Status</th>
+          <th>Views</th>
+          <th>Date</th>
+          <th>Actions</th>
+        </tr>
+      </thead>
+      <tbody id="posts-tbody">
+        <tr><td colspan="7" style="text-align:center;padding:32px;color:var(--text-muted)">
+          <div class="loader-ring" style="margin:0 auto 10px"></div>Loading posts...
+        </td></tr>
+      </tbody>
+    </table>
+  </div>
+  <div style="padding:14px 20px;border-top:1px solid var(--border);display:flex;align-items:center;justify-content:space-between">
+    <span style="font-size:0.8rem;color:var(--text-muted)" id="posts-count">Loading...</span>
+    <div style="display:flex;gap:6px">
+      <button class="cp-btn cp-btn-ghost" id="prev-btn" onclick="prevPage()">← Prev</button>
+      <button class="cp-btn cp-btn-ghost" id="next-btn" onclick="nextPage()">Next →</button>
+    </div>
+  </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+let allPosts=[], filtered=[], currentPage=0, currentStatus='all', currentCat='', searchQ='';
+const PER=10;
+
+async function loadPosts() {
+  try {
+    const sb=getSupabase();
+    const {data,error}=await sb.from('blog_posts')
+      .select('id,title,status,views,created_at,published_at,blog_categories(name,slug,color)')
+      .order('created_at',{ascending:false});
+    if(error)throw error;
+    allPosts=data||[];
+    applyFilters();
+  } catch(e) {
+    document.getElementById('posts-tbody').innerHTML=`<tr><td colspan="7" style="text-align:center;padding:32px;color:var(--text-muted)">⚠️ ${e.message||'Configure Supabase to load posts.'}</td></tr>`;
+    document.getElementById('posts-count').textContent='Supabase not configured';
+  }
+}
+
+function applyFilters() {
+  filtered=allPosts.filter(p=>{
+    const matchStatus=currentStatus==='all'||p.status===currentStatus;
+    const matchCat=!currentCat||(p.blog_categories?.slug===currentCat);
+    const matchSearch=!searchQ||p.title.toLowerCase().includes(searchQ.toLowerCase());
+    return matchStatus&&matchCat&&matchSearch;
+  });
+  currentPage=0;
+  renderPosts();
+}
+
+function renderPosts() {
+  const start=currentPage*PER, end=start+PER;
+  const page=filtered.slice(start,end);
+  const tbody=document.getElementById('posts-tbody');
+
+  if(!page.length){
+    tbody.innerHTML='<tr><td colspan="7" style="text-align:center;padding:32px;color:var(--text-muted)">No posts found.</td></tr>';
+    document.getElementById('posts-count').textContent='0 posts';
+    return;
+  }
+
+  tbody.innerHTML=page.map(p=>`
+    <tr>
+      <td><input type="checkbox" class="post-cb" value="${p.id}" onchange="updateBulk()"/></td>
+      <td>
+        <div style="font-weight:600;color:var(--text);font-size:0.875rem;max-width:300px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${p.title}</div>
+        <div class="cp-actions" style="margin-top:5px">
+          <a href="/admin/posts/edit/${p.id}" class="cp-btn cp-btn-ghost" style="font-size:0.72rem">✏️ Edit</a>
+          <a href="/blog/${p.id}" target="_blank" class="cp-btn cp-btn-ghost" style="font-size:0.72rem">👁 View</a>
+          <button onclick="deletePost('${p.id}')" class="cp-btn cp-btn-danger" style="font-size:0.72rem">🗑</button>
+        </div>
+      </td>
+      <td>${p.blog_categories?`<span style="padding:3px 10px;border-radius:100px;font-size:0.72rem;font-weight:700;background:${p.blog_categories.color}1A;color:${p.blog_categories.color}">${p.blog_categories.name}</span>`:'–'}</td>
+      <td><span class="cp-status cp-status-${p.status}">${p.status}</span></td>
+      <td style="color:var(--text-muted);font-size:0.82rem">${(p.views||0).toLocaleString()}</td>
+      <td style="color:var(--text-muted);font-size:0.82rem;white-space:nowrap">${new Date(p.created_at).toLocaleDateString('en-BD')}</td>
+      <td>
+        <select class="cp-select" style="width:auto;padding:4px 8px;font-size:0.78rem" onchange="changeStatus('${p.id}',this.value)">
+          <option ${p.status==='draft'?'selected':''} value="draft">Draft</option>
+          <option ${p.status==='published'?'selected':''} value="published">Published</option>
+          <option ${p.status==='archived'?'selected':''} value="archived">Archived</option>
+        </select>
+      </td>
+    </tr>
+  `).join('');
+
+  document.getElementById('posts-count').textContent=`${filtered.length} posts · Page ${currentPage+1} of ${Math.ceil(filtered.length/PER)||1}`;
+  document.getElementById('prev-btn').disabled=currentPage===0;
+  document.getElementById('next-btn').disabled=end>=filtered.length;
+}
+
+function filterStatus(s,btn){currentStatus=s;document.querySelectorAll('.cp-tab').forEach(t=>t.classList.remove('active'));btn.classList.add('active');applyFilters();}
+function filterCategory(c){currentCat=c;applyFilters();}
+let st;function searchPosts(q){clearTimeout(st);st=setTimeout(()=>{searchQ=q;applyFilters();},300);}
+function prevPage(){if(currentPage>0){currentPage--;renderPosts();}}
+function nextPage(){if((currentPage+1)*PER<filtered.length){currentPage++;renderPosts();}}
+function toggleAll(cb){document.querySelectorAll('.post-cb').forEach(c=>c.checked=cb.checked);updateBulk();}
+function updateBulk(){const n=document.querySelectorAll('.post-cb:checked').length;document.getElementById('bulk-delete-btn').style.display=n?'':'none';}
+
+async function changeStatus(id,status){
+  try{
+    const sb=getSupabase();
+    await sb.from('blog_posts').update({status,published_at:status==='published'?new Date().toISOString():null}).eq('id',id);
+    showToast(`✅ Status changed to ${status}`,'success');
+    const p=allPosts.find(x=>x.id===id);if(p)p.status=status;
+    renderPosts();
+  }catch(e){showToast('❌ '+e.message,'error');}
+}
+
+async function deletePost(id){
+  if(!confirm('Delete this post? This cannot be undone.'))return;
+  try{
+    const sb=getSupabase();
+    await sb.from('blog_posts').delete().eq('id',id);
+    allPosts=allPosts.filter(p=>p.id!==id);
+    showToast('🗑 Post deleted','success');
+    applyFilters();
+  }catch(e){showToast('❌ '+e.message,'error');}
+}
+
+async function bulkDelete(){
+  const ids=[...document.querySelectorAll('.post-cb:checked')].map(c=>c.value);
+  if(!confirm(`Delete ${ids.length} posts?`))return;
+  try{
+    const sb=getSupabase();
+    await sb.from('blog_posts').delete().in('id',ids);
+    allPosts=allPosts.filter(p=>!ids.includes(p.id));
+    showToast(`🗑 ${ids.length} posts deleted`,'success');
+    applyFilters();
+  }catch(e){showToast('❌ '+e.message,'error');}
+}
+
+document.addEventListener('DOMContentLoaded',loadPosts);
+</script>
+{% endblock %}

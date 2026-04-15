@@ -1,0 +1,251 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="description" content="SaforaTech — Complete IT & Business Tech Solutions in Bangladesh." />
+  <title>{% block title %}SaforaTech — Smart IT Solutions{% endblock %}</title>
+
+  <!-- Favicon -->
+  <link rel="icon" type="image/svg+xml" href="/static/images/favicon.svg"/>
+  <link rel="shortcut icon" href="/static/images/favicon.svg"/>
+  <link rel="apple-touch-icon" href="/static/images/favicon.svg"/>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:wght@300;400;500;600&family=Hind+Siliguri:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <link rel="stylesheet" href="/static/css/main.css" />
+  <link rel="stylesheet" href="/static/css/auth.css" />
+  {% block head %}{% endblock %}
+</head>
+<body>
+
+<div class="page-loader" id="page-loader">
+  <div style="text-align:center">
+    <div class="loader-ring"></div>
+    <div style="margin-top:16px;font-family:var(--font-display);font-weight:700;font-size:1.1rem;color:var(--primary)">SaforaTech</div>
+  </div>
+</div>
+
+<div class="announcement-bar" id="announcement-bar">
+  <span data-i18n="announcement">🚀 New: 24/7 Remote IT Support — <a href="/contact" style="color:#fff;font-weight:700;text-decoration:underline">Get a free quote →</a></span>
+  <button class="announcement-close" onclick="closeAnnouncement()">✕</button>
+</div>
+
+<!-- NAVBAR -->
+<nav class="navbar" id="navbar">
+  <div class="navbar-inner">
+    <a href="/" class="logo-link">
+      <img src="/static/images/logo.svg" alt="SaforaTech" class="nav-logo" height="44" />
+    </a>
+
+    <ul class="nav-links" id="nav-links">
+      <li><a href="/"         data-i18n="nav_home">Home</a></li>
+      <li><a href="/about"    data-i18n="nav_about">About</a></li>
+      <li><a href="/services" data-i18n="nav_services">Services</a></li>
+      <li><a href="/pricing"  data-i18n="nav_pricing">Pricing</a></li>
+      <li><a href="/blog"     data-i18n="nav_blog">Blog</a></li>
+      <li><a href="/contact"  data-i18n="nav_contact">Contact</a></li>
+      <li class="admin-only hidden"><a href="/admin/" style="color:var(--accent2)">⚙ Admin</a></li>
+    </ul>
+
+    <div class="nav-controls">
+      <div class="lang-toggle">
+        <button data-lang="en" onclick="switchLang('en')">EN</button>
+        <button data-lang="bn" onclick="switchLang('bn')">বাং</button>
+      </div>
+      <button class="btn-icon" onclick="toggleTheme()" title="Toggle theme">
+        <span id="theme-icon">🌙</span>
+      </button>
+
+      <!-- Logged-out -->
+      <button id="nav-login-btn" class="btn btn-primary btn-sm" onclick="openAuthModal('login')" data-i18n="nav_login">Login</button>
+
+      <!-- Logged-in -->
+      <div id="nav-user-menu" class="user-menu hidden">
+        <button class="user-avatar-btn" onclick="toggleUserDropdown()">
+          <span id="nav-user-avatar" class="user-avatar-circle">U</span>
+          <span id="nav-user-name" style="font-size:0.85rem;font-weight:600;color:var(--text)">User</span>
+          <span style="font-size:0.7rem;color:var(--text-muted)">▾</span>
+        </button>
+        <div id="user-dropdown" class="user-dropdown hidden">
+          <a href="/dashboard">👤 My Profile</a>
+          <a href="/blog/new" class="admin-only hidden">✏️ Write Post</a>
+          <a href="/admin/"   class="admin-only hidden">⚙️ Admin Panel</a>
+          <hr style="border:none;border-top:1px solid var(--border);margin:6px 0"/>
+          <button onclick="signOut()" style="width:100%;text-align:left;background:none;border:none;padding:8px 16px;cursor:pointer;color:#EF4444;font-size:0.875rem">🚪 Sign Out</button>
+        </div>
+      </div>
+
+      <div class="hamburger" id="hamburger">
+        <span></span><span></span><span></span>
+      </div>
+    </div>
+  </div>
+</nav>
+
+<!-- AUTH MODAL -->
+<div id="auth-modal" class="modal-overlay hidden" onclick="handleModalOverlayClick(event)">
+  <div class="modal-box" id="auth-modal-box">
+    <div class="modal-header">
+      <img src="/static/images/logo.svg" alt="SaforaTech" height="34" style="margin-bottom:12px" />
+      <button class="modal-close" onclick="closeAuthModal()">✕</button>
+    </div>
+
+    <!-- LOGIN -->
+    <div id="auth-tab-login" class="auth-tab">
+      <h2 class="auth-title" data-i18n="auth_login_title">Welcome Back</h2>
+      <p class="auth-subtitle" data-i18n="auth_login_sub">Sign in to your SaforaTech account</p>
+      <button class="btn-google" onclick="handleGoogleLogin()">
+        <svg width="18" height="18" viewBox="0 0 24 24"><path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/><path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/><path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z"/><path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"/></svg>
+        <span>Continue with Google</span>
+      </button>
+      <div class="auth-divider"><span>or</span></div>
+      <form id="login-form" onsubmit="handleLogin(event)">
+        <div class="form-group">
+          <label class="form-label">Email</label>
+          <input type="email" id="login-email" class="form-control" placeholder="you@example.com" required />
+        </div>
+        <div class="form-group">
+          <label class="form-label" style="display:flex;justify-content:space-between">
+            <span>Password</span>
+            <a href="#" onclick="openAuthModal('forgot')" style="font-size:0.8rem;color:var(--primary)">Forgot?</a>
+          </label>
+          <div style="position:relative">
+            <input type="password" id="login-password" class="form-control" placeholder="••••••••" required />
+            <button type="button" class="pwd-toggle" onclick="togglePwd('login-password',this)">👁</button>
+          </div>
+        </div>
+        <div id="login-error" class="auth-error hidden"></div>
+        <button type="submit" class="btn btn-primary" style="width:100%;justify-content:center;margin-top:4px" id="login-submit-btn">Sign In</button>
+      </form>
+      <p class="auth-switch">Don't have an account? <a href="#" onclick="openAuthModal('register')">Create one →</a></p>
+    </div>
+
+    <!-- REGISTER -->
+    <div id="auth-tab-register" class="auth-tab hidden">
+      <h2 class="auth-title">Create Account</h2>
+      <p class="auth-subtitle">Join the SaforaTech community</p>
+      <button class="btn-google" onclick="handleGoogleLogin()">
+        <svg width="18" height="18" viewBox="0 0 24 24"><path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/><path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/><path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z"/><path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"/></svg>
+        <span>Continue with Google</span>
+      </button>
+      <div class="auth-divider"><span>or</span></div>
+      <form id="register-form" onsubmit="handleRegister(event)">
+        <div class="form-group">
+          <label class="form-label">Full Name</label>
+          <input type="text" id="reg-name" class="form-control" placeholder="Your full name" required />
+        </div>
+        <div class="form-group">
+          <label class="form-label">Email</label>
+          <input type="email" id="reg-email" class="form-control" placeholder="you@example.com" required />
+        </div>
+        <div class="form-group">
+          <label class="form-label">Password</label>
+          <div style="position:relative">
+            <input type="password" id="reg-password" class="form-control" placeholder="Min. 8 characters" minlength="8" required />
+            <button type="button" class="pwd-toggle" onclick="togglePwd('reg-password',this)">👁</button>
+          </div>
+        </div>
+        <div id="register-error" class="auth-error hidden"></div>
+        <button type="submit" class="btn btn-primary" style="width:100%;justify-content:center;margin-top:4px" id="reg-submit-btn">Create Account</button>
+      </form>
+      <p class="auth-switch">Already have an account? <a href="#" onclick="openAuthModal('login')">Sign in →</a></p>
+    </div>
+
+    <!-- FORGOT -->
+    <div id="auth-tab-forgot" class="auth-tab hidden">
+      <h2 class="auth-title">Reset Password</h2>
+      <p class="auth-subtitle">Enter your email for a reset link.</p>
+      <form id="forgot-form" onsubmit="handleForgotPassword(event)">
+        <div class="form-group">
+          <label class="form-label">Email</label>
+          <input type="email" id="forgot-email" class="form-control" placeholder="you@example.com" required />
+        </div>
+        <div id="forgot-msg" class="auth-success hidden"></div>
+        <button type="submit" class="btn btn-primary" style="width:100%;justify-content:center">Send Reset Link</button>
+      </form>
+      <p class="auth-switch"><a href="#" onclick="openAuthModal('login')">← Back to Login</a></p>
+    </div>
+
+    <!-- VERIFY EMAIL -->
+    <div id="auth-tab-verify" class="auth-tab hidden" style="text-align:center;padding:16px 0">
+      <div style="font-size:3rem;margin-bottom:16px">📧</div>
+      <h2 class="auth-title">Check Your Email</h2>
+      <p class="auth-subtitle">Verification link sent! Please confirm your email before logging in.</p>
+      <button class="btn btn-ghost" style="margin-top:16px" onclick="openAuthModal('login')">Back to Login</button>
+    </div>
+  </div>
+</div>
+
+<main id="main-content">
+  {% block content %}{% endblock %}
+</main>
+
+<!-- FOOTER -->
+<footer>
+  <div class="container">
+    <div class="footer-grid">
+      <div class="footer-brand">
+        <a href="/"><img src="/static/images/logo.svg" alt="SaforaTech" height="38" style="filter:var(--logo-filter)" /></a>
+        <p style="margin:14px 0 20px;font-size:0.875rem;color:var(--text-muted);line-height:1.8;max-width:280px" data-i18n="footer_tagline">Smart IT Solutions for Smart Business</p>
+        <div class="social-links">
+          <a href="https://github.com/smmoinul" class="social-link" target="_blank">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M12 0C5.37 0 0 5.37 0 12c0 5.31 3.435 9.795 8.205 11.385.6.105.825-.255.825-.57 0-.285-.015-1.23-.015-2.235-3.015.555-3.795-.735-4.035-1.41-.135-.345-.72-1.41-1.23-1.695-.42-.225-1.02-.78-.015-.795.945-.015 1.62.87 1.845 1.23 1.08 1.815 2.805 1.305 3.495.99.105-.78.42-1.305.765-1.605-2.67-.3-5.46-1.335-5.46-5.925 0-1.305.465-2.385 1.23-3.225-.12-.3-.54-1.53.12-3.18 0 0 1.005-.315 3.3 1.23.96-.27 1.98-.405 3-.405s2.04.135 3 .405c2.295-1.56 3.3-1.23 3.3-1.23.66 1.65.24 2.88.12 3.18.765.84 1.23 1.905 1.23 3.225 0 4.605-2.805 5.625-5.475 5.925.435.375.81 1.095.81 2.22 0 1.605-.015 2.895-.015 3.3 0 .315.225.69.825.57A12.02 12.02 0 0 0 24 12c0-6.63-5.37-12-12-12z"/></svg>
+          </a>
+          <a href="https://linkedin.com/in/smmoinul" class="social-link" target="_blank">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433a2.062 2.062 0 0 1-2.063-2.065 2.064 2.064 0 1 1 2.063 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z"/></svg>
+          </a>
+          <a href="https://wa.me/8801727666136" class="social-link" target="_blank">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 0 1-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 0 1-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 0 1 2.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0 0 12.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 0 0 5.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 0 0-3.48-8.413z"/></svg>
+          </a>
+        </div>
+      </div>
+      <div class="footer-col">
+        <h4>Services</h4>
+        <ul class="footer-links">
+          <li><a href="/services#erp">SaforaERP</a></li>
+          <li><a href="/services#networking">IT Networking</a></li>
+          <li><a href="/services#server">Server & Storage</a></li>
+          <li><a href="/services#security">CCTV & Security</a></li>
+          <li><a href="/services#cloud">Web & Cloud</a></li>
+        </ul>
+      </div>
+      <div class="footer-col">
+        <h4>Company</h4>
+        <ul class="footer-links">
+          <li><a href="/about">About Us</a></li>
+          <li><a href="/pricing">Pricing Plans</a></li>
+          <li><a href="/blog">Tech Blog</a></li>
+          <li><a href="/contact">Contact</a></li>
+          <li><a href="https://erp.saforatech.com" target="_blank">SaforaERP ↗</a></li>
+        </ul>
+      </div>
+      <div class="footer-col">
+        <h4>Contact</h4>
+        <ul class="footer-links">
+          <li><a href="tel:+8801727666136">📞 +880 1727 666136</a></li>
+          <li><a href="mailto:saforatech@gmail.com">✉️ saforatech@gmail.com</a></li>
+          <li><span style="color:var(--text-muted)">📍 Labanchora, Khulna</span></li>
+          <li><span style="color:var(--text-muted);font-size:0.82rem">🕐 Sat–Thu: 9AM–6PM</span></li>
+        </ul>
+      </div>
+    </div>
+    <div class="footer-bottom">
+      <span data-i18n="footer_copy">© 2026 SaforaTech. All rights reserved.</span>
+      <span style="font-style:italic;color:var(--gold-dark);font-weight:600">Think IT, Think SaforaTech</span>
+    </div>
+  </div>
+</footer>
+
+<a href="https://wa.me/8801727666136" class="whatsapp-btn" target="_blank">
+  <svg width="26" height="26" viewBox="0 0 24 24" fill="white"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 0 1-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 0 1-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 0 1 2.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0 0 12.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 0 0 5.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 0 0-3.48-8.413z"/></svg>
+</a>
+<button id="scroll-top" class="scroll-top">↑</button>
+<div class="toast-container" id="toast-container"></div>
+
+<script src="/static/js/supabase-client.js"></script>
+<script src="/static/js/main.js"></script>
+<script src="/static/js/auth.js"></script>
+{% block scripts %}{% endblock %}
+</body>
+</html>

@@ -1,0 +1,177 @@
+{% extends "admin/base_admin.html" %}
+{% block title %}Messages — SaforaTech CPanel{% endblock %}
+{% block breadcrumb %}<a href="/admin/" style="color:var(--text-muted);text-decoration:none">Dashboard</a> › <strong>Messages</strong>{% endblock %}
+{% set active = 'messages' %}
+
+{% block content %}
+<div class="cp-page-header">
+  <div>
+    <h1 class="cp-page-title">💬 Messages</h1>
+    <p class="cp-page-sub">Contact form submissions from your website</p>
+  </div>
+  <button onclick="markAllRead()" class="btn btn-ghost btn-sm">✅ Mark All Read</button>
+</div>
+
+<div class="cp-filter-bar">
+  <div class="cp-search-wrap">
+    <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+    <input type="text" class="cp-search" placeholder="Search messages..." oninput="searchMsgs(this.value)"/>
+  </div>
+  <select class="cp-select" style="width:auto" onchange="filterMsg(this.value)">
+    <option value="">All Messages</option>
+    <option value="unread">Unread</option>
+    <option value="read">Read</option>
+    <option value="replied">Replied</option>
+  </select>
+</div>
+
+<div style="display:grid;grid-template-columns:320px 1fr;gap:16px;min-height:500px">
+
+  <!-- Message list -->
+  <div class="cp-card" style="overflow:hidden">
+    <div id="msg-list" style="overflow-y:auto;max-height:600px"></div>
+  </div>
+
+  <!-- Message detail -->
+  <div class="cp-card" id="msg-detail">
+    <div style="padding:80px;text-align:center;color:var(--text-muted)">
+      <div style="font-size:3rem;margin-bottom:12px">💬</div>
+      <div style="font-weight:600;margin-bottom:6px">Select a message</div>
+      <div style="font-size:0.85rem">Click any message to read it</div>
+    </div>
+  </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+let allMsgs=[], filteredMsgs=[], searchQ='', filterStatus='';
+
+async function loadMessages() {
+  try {
+    const sb=getSupabase();
+    const {data,error}=await sb.from('contact_messages').select('*').order('created_at',{ascending:false});
+    if(error)throw error;
+    allMsgs=data||[];
+    applyFilter();
+  }catch(e){
+    document.getElementById('msg-list').innerHTML=`<div style="padding:24px;text-align:center;color:var(--text-muted);font-size:0.875rem">⚠️ ${e.message}</div>`;
+  }
+}
+
+function applyFilter(){
+  filteredMsgs=allMsgs.filter(m=>{
+    const mStatus=!filterStatus||m.status===filterStatus;
+    const mSearch=!searchQ||(m.name+m.email+m.subject+m.message).toLowerCase().includes(searchQ.toLowerCase());
+    return mStatus&&mSearch;
+  });
+  renderList();
+}
+
+function renderList(){
+  const el=document.getElementById('msg-list');
+  if(!filteredMsgs.length){el.innerHTML='<div style="padding:32px;text-align:center;color:var(--text-muted)">No messages found.</div>';return;}
+  el.innerHTML=filteredMsgs.map(m=>`
+    <div onclick="openMsg('${m.id}')" id="list-${m.id}"
+         style="padding:14px 16px;border-bottom:1px solid var(--border);cursor:pointer;transition:all 0.2s;${m.status==='unread'?'background:rgba(0,87,255,0.04)':''}">
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:4px">
+        <span style="font-weight:${m.status==='unread'?700:600};font-size:0.875rem;color:var(--text)">${m.name}</span>
+        <span class="cp-status cp-status-${m.status}" style="font-size:0.65rem">${m.status}</span>
+      </div>
+      <div style="font-size:0.78rem;color:var(--text-muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${m.subject||'No subject'}</div>
+      <div style="font-size:0.72rem;color:var(--text-light);margin-top:2px">${new Date(m.created_at).toLocaleDateString('en-BD')}</div>
+    </div>
+  `).join('');
+}
+
+async function openMsg(id){
+  const m=allMsgs.find(x=>x.id===id);
+  if(!m)return;
+
+  // Mark as read
+  if(m.status==='unread'){
+    try{
+      const sb=getSupabase();
+      await sb.from('contact_messages').update({status:'read'}).eq('id',id);
+      m.status='read';
+      renderList();
+    }catch(e){}
+  }
+
+  // Highlight selected
+  document.querySelectorAll('#msg-list>div').forEach(d=>d.style.background='');
+  const listItem=document.getElementById('list-'+id);
+  if(listItem)listItem.style.background='rgba(0,87,255,0.08)';
+
+  document.getElementById('msg-detail').innerHTML=`
+    <div class="cp-card-header">
+      <div class="cp-card-title">${m.subject||'Message from '+m.name}</div>
+      <div style="display:flex;gap:8px">
+        <button onclick="replyMsg('${m.email}','${m.subject}')" class="cp-btn cp-btn-primary">✉️ Reply</button>
+        <button onclick="deleteMsg('${m.id}')" class="cp-btn cp-btn-danger">🗑</button>
+        <select class="cp-select" style="width:auto;padding:4px 8px;font-size:0.78rem" onchange="changeStatus('${m.id}',this.value)">
+          <option ${m.status==='unread'?'selected':''} value="unread">Unread</option>
+          <option ${m.status==='read'?'selected':''} value="read">Read</option>
+          <option ${m.status==='replied'?'selected':''} value="replied">Replied</option>
+        </select>
+      </div>
+    </div>
+    <div class="cp-card-body">
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:20px;padding-bottom:16px;border-bottom:1px solid var(--border)">
+        <div><div style="font-size:0.72rem;color:var(--text-muted);text-transform:uppercase;letter-spacing:0.5px;font-weight:600">From</div><div style="font-weight:600;margin-top:2px;color:var(--text)">${m.name}</div><div style="font-size:0.82rem;color:var(--primary)">${m.email}</div></div>
+        <div><div style="font-size:0.72rem;color:var(--text-muted);text-transform:uppercase;letter-spacing:0.5px;font-weight:600">Phone</div><div style="font-weight:500;margin-top:2px;color:var(--text)">${m.phone||'Not provided'}</div></div>
+        <div><div style="font-size:0.72rem;color:var(--text-muted);text-transform:uppercase;letter-spacing:0.5px;font-weight:600">Subject</div><div style="font-weight:500;margin-top:2px;color:var(--text)">${m.subject||'–'}</div></div>
+        <div><div style="font-size:0.72rem;color:var(--text-muted);text-transform:uppercase;letter-spacing:0.5px;font-weight:600">Date</div><div style="font-weight:500;margin-top:2px;color:var(--text)">${new Date(m.created_at).toLocaleString('en-BD')}</div></div>
+      </div>
+      <div>
+        <div style="font-size:0.72rem;color:var(--text-muted);text-transform:uppercase;letter-spacing:0.5px;font-weight:600;margin-bottom:10px">Message</div>
+        <div style="background:var(--bg-section);border-radius:10px;padding:16px;font-size:0.9rem;color:var(--text);line-height:1.8;white-space:pre-wrap">${m.message}</div>
+      </div>
+    </div>
+  `;
+}
+
+async function changeStatus(id,status){
+  try{
+    const sb=getSupabase();
+    await sb.from('contact_messages').update({status}).eq('id',id);
+    const m=allMsgs.find(x=>x.id===id);
+    if(m)m.status=status;
+    renderList();
+    showToast('✅ Status updated','success');
+  }catch(e){showToast('❌ '+e.message,'error');}
+}
+
+async function deleteMsg(id){
+  if(!confirm('Delete this message?'))return;
+  try{
+    const sb=getSupabase();
+    await sb.from('contact_messages').delete().eq('id',id);
+    allMsgs=allMsgs.filter(m=>m.id!==id);
+    document.getElementById('msg-detail').innerHTML='<div style="padding:80px;text-align:center;color:var(--text-muted)"><div style="font-size:2rem;margin-bottom:10px">🗑</div>Message deleted</div>';
+    applyFilter();
+    showToast('🗑 Message deleted','success');
+  }catch(e){showToast('❌ '+e.message,'error');}
+}
+
+function replyMsg(email,subject){
+  window.open(`mailto:${email}?subject=Re: ${encodeURIComponent(subject||'Your inquiry')}`);
+}
+
+async function markAllRead(){
+  try{
+    const sb=getSupabase();
+    await sb.from('contact_messages').update({status:'read'}).eq('status','unread');
+    allMsgs.forEach(m=>{if(m.status==='unread')m.status='read';});
+    renderList();
+    showToast('✅ All marked as read','success');
+  }catch(e){showToast('❌ '+e.message,'error');}
+}
+
+let st;
+function searchMsgs(q){clearTimeout(st);st=setTimeout(()=>{searchQ=q;applyFilter();},300);}
+function filterMsg(s){filterStatus=s;applyFilter();}
+
+document.addEventListener('DOMContentLoaded',loadMessages);
+</script>
+{% endblock %}
