@@ -4,8 +4,8 @@
 // Replace these with your actual Supabase project credentials:
 // Supabase Dashboard → Project Settings → API
 
-const SUPABASE_URL = 'https://YOUR_PROJECT_ID.supabase.co';
-const SUPABASE_ANON_KEY = 'YOUR_ANON_PUBLIC_KEY';
+const SUPABASE_URL = 'https://wayyumyglzddlkluzczb.supabase.co';
+const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6IndheXl1bXlnbHpkZGxrbHV6Y3piIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzYyNjg4NDEsImV4cCI6MjA5MTg0NDg0MX0.cma3WaekjPD1IVmI0YJsdl23CXoNYnqqv5dMS1NahC4';
 
 // ── Supabase Client (loaded from CDN in HTML) ────────────────
 // window.supabase is set after <script> tag loads
