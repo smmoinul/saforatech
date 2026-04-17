@@ -1,5 +1,6 @@
+import os
 from fastapi import FastAPI, Request, Form
-from fastapi.responses import HTMLResponse, JSONResponse, RedirectResponse
+from fastapi.responses import HTMLResponse, JSONResponse
 from fastapi.staticfiles import StaticFiles
 from fastapi.templating import Jinja2Templates
 from app.routers import api
@@ -8,7 +9,6 @@ import uvicorn
 app = FastAPI(
     title="SaforaTech",
     description="SaforaTech Official Website",
-    # Disable automatic trailing slash redirect
     redirect_slashes=False
 )
 
@@ -16,10 +16,17 @@ app.mount("/static", StaticFiles(directory="static"), name="static")
 templates = Jinja2Templates(directory="templates")
 app.include_router(api.router, prefix="/api")
 
-T = templates
-
 def render(tmpl, req, **ctx):
-    return T.TemplateResponse(tmpl, {"request": req, **ctx})
+    return templates.TemplateResponse(tmpl, {"request": req, **ctx})
+
+# ── Config API (for Supabase keys from env vars) ──────────────
+@app.get("/api/config")
+async def get_config():
+    """Returns public config — safe to expose (anon key only)"""
+    return JSONResponse({
+        "supabase_url": os.getenv("SUPABASE_URL", ""),
+        "supabase_key": os.getenv("SUPABASE_ANON_KEY", "")
+    })
 
 # ══ PUBLIC PAGES ═════════════════════════════════════════════
 @app.get("/", response_class=HTMLResponse)
@@ -68,7 +75,6 @@ async def reset_password(request: Request):
     return render("auth_reset.html", request)
 
 # ══ ADMIN CPANEL ═════════════════════════════════════════════
-# Handle both /admin and /admin/ → dashboard
 @app.get("/admin", response_class=HTMLResponse)
 async def admin_root(request: Request):
     return render("admin/dashboard.html", request)
@@ -125,7 +131,7 @@ async def admin_settings(request: Request):
 async def admin_login(request: Request):
     return render("admin/login.html", request)
 
-# ══ API ═══════════════════════════════════════════════════════
+# ══ CONTACT FORM API ══════════════════════════════════════════
 @app.post("/api/contact")
 async def submit_contact(
     name: str = Form(...),
@@ -134,7 +140,9 @@ async def submit_contact(
     subject: str = Form(""),
     message: str = Form(...)
 ):
+    # Saved to Supabase via client-side JS
     return JSONResponse({"success": True, "message": "Message received!"})
 
 if __name__ == "__main__":
-    uvicorn.run("main:app", host="0.0.0.0", port=8000, reload=True)
+    port = int(os.getenv("PORT", 8000))
+    uvicorn.run("main:app", host="0.0.0.0", port=port, reload=False)
